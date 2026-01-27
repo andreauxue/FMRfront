@@ -1,0 +1,15 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import DonationWidget from "../components/DonationWidget";
+---
+
+<MainLayout title="Donaciones | Fundación">
+  <h1 class="text-3xl font-bold">Donaciones</h1>
+  <p class="mt-3 text-slate-700">
+    Tu apoyo ayuda a sostener programas y acompañamiento.
+  </p>
+
+  <div class="mt-8 max-w-xl">
+    <DonationWidget client:load />
+  </div>
+</MainLayout>
