@@ -1,73 +1,78 @@
-import { COLORS, NAV_LINKS } from "../../data/siteData";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
-    <footer className="py-12 text-white" style={{ background: COLORS.secondary }}>
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid sm:grid-cols-3 gap-8 mb-8">
+    <>
+      {/* Contact strip */}
+      <section className="bg-[#080808] border-t border-[#1A1A1A] py-20 px-6">
+        <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-12">
           <div>
-            <h3
-              className="text-2xl font-black"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+            <div className="text-[#F21D43] text-xs font-bold tracking-[0.4em] uppercase mb-4">
+              Ubicacion
+            </div>
+            <p className="text-[#999] text-sm leading-relaxed">
+              Cerrada de Omega 260
+              <br />
+              Romero de Terreros
+              <br />
+              Ciudad de Mexico, CDMX, Mexico
+            </p>
+          </div>
+          <div>
+            <div className="text-[#F21D43] text-xs font-bold tracking-[0.4em] uppercase mb-4">
+              Contacto
+            </div>
+            <a
+              href="mailto:mejoremosrealidadesfundacion@gmail.com"
+              className="text-[#999] text-sm hover:text-white transition-colors block mb-2"
             >
-              <span style={{ color: COLORS.brand }}>Mejoremos</span> Realidades
-            </h3>
-            <p className="text-white/60 text-sm mt-2 leading-relaxed">
-              Asociación Civil comprometida con los pacientes de leucemia y cáncer en México.
-            </p>
+              mejoremosrealidadesfundacion@gmail.com
+            </a>
+            <p className="text-[#555] text-xs">Previa cita — sera un placer atenderte</p>
           </div>
-
           <div>
-            <h4 className="font-bold mb-3 text-white/80 text-sm uppercase tracking-widest">
-              Navegación
-            </h4>
-            <ul className="space-y-2">
-              {NAV_LINKS.slice(0, 5).map((link) => (
-                <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-white/60 hover:text-white text-sm transition-colors"
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-bold mb-3 text-white/80 text-sm uppercase tracking-widest">
-              Suscríbete
-            </h4>
-            <p className="text-white/60 text-sm mb-3">
-              Recibe noticias sobre eventos y campañas.
-            </p>
-            <div className="flex gap-2">
-              <input
-                type="email"
-                placeholder="tu@correo.com"
-                className="flex-1 px-3 py-2 rounded-xl text-sm bg-white/10 text-white placeholder-white/40 border border-white/20 focus:outline-none"
-              />
-              <button
-                className="px-4 py-2 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90"
-                style={{ background: COLORS.brand }}
+            <div className="text-[#F21D43] text-xs font-bold tracking-[0.4em] uppercase mb-4">
+              Redes sociales
+            </div>
+            <div className="flex gap-6">
+              <a
+                href="https://www.facebook.com/110183845151250"
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#999] text-sm hover:text-[#F21D43] transition-colors font-medium"
               >
-                OK
-              </button>
+                Facebook
+              </a>
+              <a
+                href="https://www.instagram.com/fmejoremosrealidades"
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#999] text-sm hover:text-[#F21D43] transition-colors font-medium"
+              >
+                Instagram
+              </a>
             </div>
           </div>
         </div>
+      </section>
 
-        <div
-          className="pt-6 flex flex-col sm:flex-row justify-between items-center gap-2 text-white/40 text-xs"
-          style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}
-        >
-          <p>© 2024 Fundación Mejoremos Realidades A.C. Todos los derechos reservados.</p>
-          <a href="#" className="hover:text-white/70 transition-colors">
+      {/* Footer bar */}
+      <footer className="bg-[#050505] border-t border-[#111] py-8 px-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="text-[#333] text-xs tracking-widest uppercase">
+            Fundacion Mejoremos Realidades A.C.
+          </div>
+          <div className="text-[#333] text-xs">
+            Copyright &copy; 2024 — Todos los derechos reservados
+          </div>
+          <Link
+            to="/acerca-de"
+            className="text-[#333] text-xs hover:text-[#F21D43] transition-colors tracking-widest uppercase"
+          >
             Aviso de privacidad
-          </a>
+          </Link>
         </div>
-      </div>
-    </footer>
+      </footer>
+    </>
   );
 }
