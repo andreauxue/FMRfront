@@ -5,7 +5,7 @@ import Dashboard from "../pages/Dashboard";
 import Login from "../pages/Login";
 import PlaceholderPage from "../pages/PlaceholderPage";
 import SystemStatus from "../pages/SystemStatus";
-
+import ContentPage from "../pages/ContentPage";
 // Subárbol de rutas del panel. Se importa en App.jsx y se coloca dentro de <Routes>
 // junto a las rutas públicas, sin tocarlas.
 //
@@ -18,7 +18,7 @@ export const adminRoutes = (
     <Route element={<ProtectedRoute />}>
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Dashboard />} />
-        <Route path="contenido"     element={<PlaceholderPage titulo="Contenido del sitio" descripcion="Edita los textos de las páginas públicas." />} />
+        <Route path="contenido" element={<ContentPage />} />
         <Route path="proyectos"     element={<PlaceholderPage titulo="Proyectos" descripcion="Administra los proyectos de la Fundación." />} />
         <Route path="mensajes"      element={<PlaceholderPage titulo="Mensajes" descripcion="Bandeja de mensajes de contacto." />} />
         <Route path="respaldos"     element={<PlaceholderPage titulo="Respaldos" descripcion="Genera y consulta respaldos del sistema." />} />
