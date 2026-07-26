@@ -2,6 +2,21 @@ import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
+import {
+  IconHeart,
+  IconPill,
+  IconScale,
+  IconBrain,
+  IconHeartHandshake,
+  IconUsers,
+  IconCalendar,
+  IconBuildingHospital,
+  IconClipboardText,
+  IconBook2,
+  IconMessageCircle,
+  IconVaccine,
+  IconArrowRight,
+} from "@tabler/icons-react";
 
 // ─── Brand palette (warm, human, healthcare) ──────────────────────────────────
 const C = {
@@ -19,28 +34,38 @@ const C = {
   border:    "#E5E7EB",
 };
 
-// ─── Images ───────────────────────────────────────────────────────────────────
-const HERO_IMG =
-  "https://images.unsplash.com/photo-1584515933487-779824d29309?w=1600&q=80";
-const ABOUT_IMG =
-  "https://images.unsplash.com/photo-1527613426441-4da17471b66d?w=900&q=80";
-const SERVICES_IMGS = [
-  "https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?w=700&q=80",
-  "https://images.unsplash.com/photo-1589391886645-d51941baf7fb?w=700&q=80",
-  "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=700&q=80",
-];
+// ─── Images (locales) ─────────────────────────────────────────────────────────
+// Coloca los archivos en /public/images/ con esta estructura:
+//   /public/images/hero.jpg
+//   /public/images/nosotros.jpg
+//   /public/images/servicios/medica.jpg
+//   /public/images/servicios/juridica.jpg
+//   /public/images/servicios/psicologica.jpg
+//   /public/images/equipo/*.jpg
+//   /public/images/embajadores/*.jpg
+const IMG = {
+  hero:  "/images/hero.jpg",
+  about: "/images/nosotros.jpg",
+  services: {
+    medica:      "/images/servicios/medica.jpg",
+    juridica:    "/images/servicios/juridica.jpg",
+    psicologica: "/images/servicios/psicologica.jpg",
+  },
+};
+
 const REAL_TEAM = [
-  { name: "Marco Sanchez",      role: "Presidente",                      img: "https://img1.wsimg.com/isteam/ip/de14c48c-6392-4155-8907-b87ab2e40fa5/Captura%20de%20pantalla%202024-05-18%20a%20la(s)%2012.23.2.png/:/cr=t:0%25,l:0.69%25,w:98.63%25,h:100%25/rs=w:600,h:800,cg:true" },
-  { name: "Danna Martinez",     role: "Secretaria General",              img: "https://img1.wsimg.com/isteam/ip/de14c48c-6392-4155-8907-b87ab2e40fa5/IMG_5646.jpg/:/cr=t:0%25,l:3.42%25,w:93.17%25,h:100%25/rs=w:600,h:800,cg:true" },
-  { name: "Maria Jose Martinez",role: "Tesorera",                        img: "https://img1.wsimg.com/isteam/ip/de14c48c-6392-4155-8907-b87ab2e40fa5/8ba2053f-c359-44c9-9f98-587da44a46bd.JPG/:/cr=t:0%25,l:4.55%25,w:90.9%25,h:100%25/rs=w:600,h:800,cg:true" },
-  { name: "Diego Castilla",     role: "Director Institucional",          img: "https://img1.wsimg.com/isteam/ip/de14c48c-6392-4155-8907-b87ab2e40fa5/Captura%20de%20pantalla%202024-05-20%20a%20la(s)%204.36.18.png/:/cr=t:10.9%25,l:0%25,w:100%25,h:78.21%25/rs=w:600,h:800,cg:true" },
-  { name: "Andrea Amaya",       role: "Dir. Operaciones Tecnologicas",   img: "https://img1.wsimg.com/isteam/ip/de14c48c-6392-4155-8907-b87ab2e40fa5/PHOTO-2025-10-31-11-32-23.jpg/:/cr=t:0%25,l:2.38%25,w:95.24%25,h:100%25/rs=w:600,h:800,cg:true" },
+  { name: "Marco Sanchez",       role: "Presidente",                    img: "/images/equipo/marco-sanchez.jpg" },
+  { name: "Danna Martinez",      role: "Secretaria General",            img: "/images/equipo/danna-martinez.jpg" },
+  { name: "Maria Jose Martinez", role: "Tesorera",                      img: "/images/equipo/maria-jose-martinez.jpg" },
+  { name: "Diego Castilla",      role: "Director Institucional",        img: "/images/equipo/diego-castilla.jpg" },
+  { name: "Andrea Amaya",        role: "Dir. Operaciones Tecnologicas", img: "/images/equipo/andrea-amaya.jpg" },
 ];
-const AMBASSADOR_IMGS = [
-  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80",
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80",
-  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80",
-  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80",
+
+const AMBASSADORS = [
+  { img: "/images/embajadores/embajador-1.jpg" },
+  { img: "/images/embajadores/embajador-2.jpg" },
+  { img: "/images/embajadores/embajador-3.jpg" },
+  { img: "/images/embajadores/embajador-4.jpg" },
 ];
 
 // ─── Reveal hook ──────────────────────────────────────────────────────────────
@@ -60,8 +85,20 @@ function useReveal(threshold = 0.12) {
   return [ref, visible];
 }
 
+// ─── Icon chip ────────────────────────────────────────────────────────────────
+function IconChip({ icon: Icon, size = 22, soft = C.brandSoft, color = C.brand }) {
+  return (
+    <div
+      className="inline-flex items-center justify-center rounded-xl shrink-0"
+      style={{ width: 44, height: 44, background: soft, color }}
+    >
+      <Icon size={size} stroke={1.75} />
+    </div>
+  );
+}
+
 // ─── Stat counter ─────────────────────────────────────────────────────────────
-function StatCounter({ end, suffix = "", label, icon }) {
+function StatCounter({ end, suffix = "", label, icon: Icon }) {
   const [count, setCount] = useState(0);
   const [ref, visible] = useReveal(0.3);
   useEffect(() => {
@@ -77,7 +114,12 @@ function StatCounter({ end, suffix = "", label, icon }) {
   }, [visible, end]);
   return (
     <div ref={ref} className="text-center flex flex-col items-center gap-2">
-      <div className="text-3xl mb-1">{icon}</div>
+      <div
+        className="flex items-center justify-center rounded-full mb-1"
+        style={{ width: 52, height: 52, background: C.surface, color: C.brand }}
+      >
+        <Icon size={26} stroke={1.75} />
+      </div>
       <div
         className="font-bold tabular-nums"
         style={{ color: C.brand, fontSize: "2.8rem", lineHeight: 1 }}
@@ -104,14 +146,15 @@ function SectionLabel({ children, light = false }) {
   );
 }
 
-// ─── Primary button ───────────────────────────────────────────────────────────
-function PrimaryBtn({ to, children }) {
+// ─── Buttons ──────────────────────────────────────────────────────────────────
+function PrimaryBtn({ to, children, icon: Icon }) {
   return (
     <Link
       to={to}
       className="inline-flex items-center gap-2 font-bold text-sm px-7 py-3.5 rounded-full transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5"
       style={{ background: C.brand, color: "#fff" }}
     >
+      {Icon && <Icon size={18} stroke={2} />}
       {children}
     </Link>
   );
@@ -151,7 +194,7 @@ function Hero() {
       {/* Hero image — right half, clipped */}
       <div className="absolute right-0 top-0 bottom-0 w-1/2 hidden md:block">
         <img
-          src={HERO_IMG}
+          src={IMG.hero}
           alt="Paciente con leucemia recibiendo apoyo"
           className="w-full h-full object-cover"
           style={{ objectPosition: "center top" }}
@@ -187,7 +230,7 @@ function Hero() {
           </p>
 
           <div className="flex flex-wrap gap-3">
-            <PrimaryBtn to="/donaciones">❤️ Dona ahora</PrimaryBtn>
+            <PrimaryBtn to="/donaciones" icon={IconHeart}>Dona ahora</PrimaryBtn>
             <SecondaryBtn to="/servicios">Nuestros servicios</SecondaryBtn>
           </div>
 
@@ -224,6 +267,12 @@ function Ticker() {
 }
 
 // ─── About ────────────────────────────────────────────────────────────────────
+const PILLARS = [
+  { icon: IconPill,  label: "Gestión médica y medicamentos" },
+  { icon: IconScale, label: "Asesoría jurídica gratuita" },
+  { icon: IconBrain, label: "Apoyo psicológico integral" },
+];
+
 function About() {
   const [ref, visible] = useReveal();
   return (
@@ -233,8 +282,8 @@ function About() {
         {/* Image */}
         <div className={`relative transition-all duration-1000 ${visible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-10"}`}>
           <img
-            src={ABOUT_IMG}
-            alt="Fundacion Mejoremos Realidades"
+            src={IMG.about}
+            alt="Fundación Mejoremos Realidades"
             className="w-full h-[480px] object-cover rounded-2xl shadow-lg"
           />
           {/* Founded badge */}
@@ -272,19 +321,20 @@ function About() {
 
           {/* Pillars */}
           <div className="flex flex-col gap-3 mb-8">
-            {[
-              { icon: "💊", label: "Gestión médica y medicamentos" },
-              { icon: "⚖️", label: "Asesoría jurídica gratuita" },
-              { icon: "🧠", label: "Apoyo psicológico integral" },
-            ].map(p => (
-              <div key={p.label} className="flex items-center gap-3 text-sm font-medium" style={{ color: C.text }}>
-                <span className="text-lg">{p.icon}</span>
-                {p.label}
+            {PILLARS.map(({ icon: Icon, label }) => (
+              <div key={label} className="flex items-center gap-3 text-sm font-medium" style={{ color: C.text }}>
+                <span
+                  className="inline-flex items-center justify-center rounded-lg shrink-0"
+                  style={{ width: 36, height: 36, background: C.brandSoft, color: C.brand }}
+                >
+                  <Icon size={19} stroke={1.75} />
+                </span>
+                {label}
               </div>
             ))}
           </div>
 
-          <SecondaryBtn to="/acerca-de">Conoce más →</SecondaryBtn>
+          <SecondaryBtn to="/acerca-de">Conoce más</SecondaryBtn>
         </div>
       </div>
     </section>
@@ -294,22 +344,22 @@ function About() {
 // ─── Services ────────────────────────────────────────────────────────────────
 const SERVICES = [
   {
-    img: SERVICES_IMGS[0],
-    icon: "💊",
+    img: IMG.services.medica,
+    icon: IconPill,
     title: "Gestión Médica",
     body: "Te orientamos hacia los servicios médicos correctos, resolvemos dudas sobre tu diagnóstico y gestionamos el acceso a medicamentos especializados.",
     href: "/servicios",
   },
   {
-    img: SERVICES_IMGS[1],
-    icon: "⚖️",
+    img: IMG.services.juridica,
+    icon: IconScale,
     title: "Asesoría Jurídica",
     body: "Defendemos tu derecho a la salud. Si tus derechos están siendo vulnerados, nuestros abogados te acompañan en cada paso del proceso legal.",
     href: "/servicios",
   },
   {
-    img: SERVICES_IMGS[2],
-    icon: "🤝",
+    img: IMG.services.psicologica,
+    icon: IconHeartHandshake,
     title: "Atención Psicológica",
     body: "Nadie debe sentirse solo en este camino. Ofrecemos apoyo emocional, grupos de experiencias y acompañamiento profesional para ti y tu familia.",
     href: "/servicios",
@@ -362,7 +412,9 @@ function Services() {
 
               {/* Content */}
               <div className="p-7">
-                <div className="text-3xl mb-3">{s.icon}</div>
+                <div className="mb-4">
+                  <IconChip icon={s.icon} />
+                </div>
                 <h3 className="font-bold text-xl mb-2" style={{ color: C.text }}>{s.title}</h3>
                 <p className="text-sm leading-relaxed mb-5" style={{ color: C.textMid }}>{s.body}</p>
                 <Link
@@ -370,7 +422,8 @@ function Services() {
                   className="inline-flex items-center gap-1 text-sm font-bold transition-colors"
                   style={{ color: C.brand }}
                 >
-                  Saber más →
+                  Saber más
+                  <IconArrowRight size={16} stroke={2.25} />
                 </Link>
               </div>
             </div>
@@ -388,10 +441,10 @@ function Stats() {
       <div className="max-w-5xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
           {[
-            { end: 1200, suffix: "+", label: "Pacientes atendidos",     icon: "👤" },
-            { end: 5,    suffix: "",  label: "Años de trayectoria",     icon: "📅" },
-            { end: 3,    suffix: "",  label: "Servicios especializados", icon: "🏥" },
-            { end: 30,   suffix: "+", label: "Voluntarios activos",     icon: "🤝" },
+            { end: 1200, suffix: "+", label: "Pacientes atendidos",      icon: IconUsers },
+            { end: 5,    suffix: "",  label: "Años de trayectoria",      icon: IconCalendar },
+            { end: 3,    suffix: "",  label: "Servicios especializados", icon: IconBuildingHospital },
+            { end: 30,   suffix: "+", label: "Voluntarios activos",      icon: IconHeartHandshake },
           ].map((s) => (
             <StatCounter key={s.label} {...s} />
           ))}
@@ -436,7 +489,6 @@ function Team() {
                   src={m.img}
                   alt={m.name}
                   className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                  // ✅ NO grayscale — fotos cálidas y naturales
                 />
               </div>
               <div className="p-4">
@@ -456,6 +508,13 @@ function Team() {
 }
 
 // ─── Impact / Patient Resources ───────────────────────────────────────────────
+const RESOURCES = [
+  { icon: IconClipboardText, text: "Acceso a información sobre tipos de leucemia" },
+  { icon: IconBook2,         text: "Guías de vida digna y manuales de derechos" },
+  { icon: IconMessageCircle, text: "Red de apoyo emocional con otros pacientes" },
+  { icon: IconVaccine,       text: "Orientación para acceder a tratamientos" },
+];
+
 function Impact() {
   const [ref, visible] = useReveal();
   return (
@@ -483,19 +542,19 @@ function Impact() {
 
         <div className={`transition-all duration-1000 delay-200 ${visible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10"}`}>
           <div className="flex flex-col gap-4">
-            {[
-              { icon: "📋", text: "Acceso a información sobre tipos de leucemia" },
-              { icon: "📖", text: "Guías de vida digna y manuales de derechos" },
-              { icon: "💬", text: "Red de apoyo emocional con otros pacientes" },
-              { icon: "💉", text: "Orientación para acceder a tratamientos" },
-            ].map((item) => (
+            {RESOURCES.map(({ icon: Icon, text }) => (
               <div
-                key={item.text}
-                className="flex items-start gap-4 rounded-xl p-5 shadow-sm"
+                key={text}
+                className="flex items-center gap-4 rounded-xl p-5 shadow-sm"
                 style={{ background: C.surface }}
               >
-                <span className="text-2xl">{item.icon}</span>
-                <p className="text-sm leading-relaxed font-medium" style={{ color: C.text }}>{item.text}</p>
+                <span
+                  className="inline-flex items-center justify-center rounded-lg shrink-0"
+                  style={{ width: 40, height: 40, background: C.brandSoft, color: C.brand }}
+                >
+                  <Icon size={21} stroke={1.75} />
+                </span>
+                <p className="text-sm leading-relaxed font-medium" style={{ color: C.text }}>{text}</p>
               </div>
             ))}
           </div>
@@ -523,7 +582,7 @@ function Ambassadors() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-          {AMBASSADOR_IMGS.map((img, i) => (
+          {AMBASSADORS.map((a, i) => (
             <div
               key={i}
               className={`group rounded-2xl overflow-hidden shadow-sm border hover:shadow-md transition-all duration-500 hover:-translate-y-1 ${
@@ -533,10 +592,9 @@ function Ambassadors() {
             >
               <div className="aspect-square relative overflow-hidden">
                 <img
-                  src={img}
+                  src={a.img}
                   alt={`Embajador ${i + 1}`}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  // ✅ NO grayscale
                 />
               </div>
               <div className="p-4 bg-white">
@@ -593,10 +651,11 @@ function DonateSection() {
         <div className="flex flex-wrap gap-4 justify-center">
           <Link
             to="/donaciones"
-            className="font-bold text-sm px-8 py-4 rounded-full transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2 font-bold text-sm px-8 py-4 rounded-full transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
             style={{ background: "#fff", color: C.brand }}
           >
-            ❤️ Donar ahora
+            <IconHeart size={18} stroke={2} />
+            Donar ahora
           </Link>
           <Link
             to="/causas"
