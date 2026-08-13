@@ -1,90 +1,248 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { IconHeartFilled, IconLogin2 } from "@tabler/icons-react";
-import FormField from "../components/FormField";
-import { C, R, SHADOW } from "../theme";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
+import {
+  IconLock,
+  IconMail,
+  IconLoader2,
+  IconAlertCircle,
+  IconEye,
+  IconEyeOff,
+} from "@tabler/icons-react";
 
-// Inicio de sesión del panel.
-//
-// PROVISIONAL: el envío debe llamar al backend (POST /api/auth/login) para que el
-// servidor emita una cookie de sesión httpOnly. NO guardar credenciales ni tokens
-// en localStorage. Esta pantalla solo prepara la interfaz y el flujo de navegación.
+const C = {
+  brand:     "#C8384F",
+  brandSoft: "#FAE8EB",
+  brandDark: "#A02C3E",
+  bg:        "#F0F2F5",
+  surface:   "#FFFFFF",
+  text:      "#111827",
+  textMid:   "#4B5563",
+  textLight: "#9CA3AF",
+  border:    "#E5E7EB",
+};
+
 export default function Login() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const destino = location.state?.from?.pathname || "/admin";
+  const navigate  = useNavigate();
+  const location  = useLocation();
+  const { login } = useAuth();
 
-  const [correo, setCorreo] = useState("");
+  const [email,    setEmail]    = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
-  const [enviando, setEnviando] = useState(false);
+  const [error,    setError]    = useState("");
+  const [loading,  setLoading]  = useState(false);
+  const [showPass, setShowPass] = useState(false);
 
-  async function handleSubmit() {
-    setError(null);
-    if (!correo || !password) {
-      setError("Escribe tu correo y contraseña.");
-      return;
-    }
-    setEnviando(true);
+  async function handleSubmit(event) {
+    event.preventDefault();
+    setError("");
+    setLoading(true);
+
     try {
-      // TODO(backend): const res = await fetch("/api/auth/login", { method:"POST", ... })
-      // Si la respuesta es correcta, el servidor deja la sesión lista y navegamos.
-      await new Promise((r) => setTimeout(r, 500));
-      navigate(destino, { replace: true });
-    } catch {
-      setError("No fue posible iniciar sesión. Verifica tus datos.");
+      const user = await login(email, password);
+      const destination = location.state?.from?.pathname || "/admin";
+      navigate(destination, { replace: true });
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "No se pudo iniciar sesión"
+      );
     } finally {
-      setEnviando(false);
+      setLoading(false);
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 font-sans" style={{ background: C.bg }}>
-      <div className="w-full max-w-sm p-8" style={{ background: C.surface, borderRadius: R.lg, boxShadow: SHADOW.raised }}>
-        <div className="flex flex-col items-center text-center mb-7">
-          <span
-            className="inline-flex items-center justify-center mb-4"
-            style={{ width: 48, height: 48, borderRadius: R.md, background: C.brand, color: "#fff" }}
+    <main
+      className="min-h-screen flex items-center justify-center px-4"
+      style={{ background: C.bg }}
+    >
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+
+      <div className="w-full" style={{ maxWidth: 420 }}>
+
+        {/* Logo / marca */}
+        <div className="text-center mb-10">
+          <img
+            src="/logo.png"
+            alt="Fundación Mejoremos Realidades"
+            className="mx-auto mb-6"
+            style={{ height: 80, width: "auto", objectFit: "contain" }}
+          />
+          <h1
+            className="font-black text-2xl"
+            style={{ color: C.text, letterSpacing: "-0.025em" }}
           >
-            <IconHeartFilled size={24} />
-          </span>
-          <h1 className="font-bold text-lg" style={{ color: C.text }}>Panel administrativo</h1>
-          <p className="text-sm mt-1" style={{ color: C.textMid }}>Fundación Mejoremos Realidades</p>
+            Administración
+          </h1>
+          <p className="text-sm mt-1" style={{ color: C.textLight }}>
+            Fundación Mejoremos Realidades A.C.
+          </p>
         </div>
 
-        <div className="flex flex-col gap-4" onKeyDown={(e) => e.key === "Enter" && handleSubmit()}>
-          <FormField
-            id="correo"
-            label="Correo"
-            type="email"
-            value={correo}
-            onChange={setCorreo}
-            placeholder="tu@correo.org"
-            autoComplete="username"
-          />
-          <FormField
-            id="password"
-            label="Contraseña"
-            type="password"
-            value={password}
-            onChange={setPassword}
-            placeholder="••••••••"
-            autoComplete="current-password"
-            error={error}
-          />
+        {/* Tarjeta */}
+        <div
+          className="rounded-3xl p-8 border"
+          style={{ background: C.surface, borderColor: C.border }}
+        >
+          <form onSubmit={handleSubmit} noValidate>
+            <div className="flex flex-col gap-5">
 
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={enviando}
-            className="inline-flex items-center justify-center gap-2 font-bold text-sm px-5 py-3 mt-1 transition-all disabled:opacity-60"
-            style={{ background: C.secondary, color: "#fff", borderRadius: R.pill }}
-          >
-            <IconLogin2 size={18} stroke={2} />
-            {enviando ? "Entrando…" : "Iniciar sesión"}
-          </button>
+              {/* Email */}
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-xs font-bold tracking-wide uppercase mb-2"
+                  style={{ color: C.textMid }}
+                >
+                  Correo electrónico
+                </label>
+                <div className="relative">
+                  <IconMail
+                    size={16} stroke={2}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
+                    style={{ color: C.textLight }}
+                  />
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => { setEmail(e.target.value); setError(""); }}
+                    autoComplete="email"
+                    placeholder="correo@ejemplo.com"
+                    required
+                    disabled={loading}
+                    className="w-full pl-11 pr-4 py-3 text-sm outline-none transition-all duration-200"
+                    style={{
+                      background:   C.surface,
+                      border:       `1.5px solid ${C.border}`,
+                      borderRadius: "12px",
+                      color:        C.text,
+                      opacity:      loading ? 0.6 : 1,
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = C.brand;
+                      e.target.style.boxShadow   = `0 0 0 3px ${C.brand}18`;
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = C.border;
+                      e.target.style.boxShadow   = "none";
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Contraseña */}
+              <div>
+                <label
+                  htmlFor="password"
+                  className="block text-xs font-bold tracking-wide uppercase mb-2"
+                  style={{ color: C.textMid }}
+                >
+                  Contraseña
+                </label>
+                <div className="relative">
+                  <IconLock
+                    size={16} stroke={2}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
+                    style={{ color: C.textLight }}
+                  />
+                  <input
+                    id="password"
+                    type={showPass ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => { setPassword(e.target.value); setError(""); }}
+                    autoComplete="current-password"
+                    placeholder="••••••••"
+                    required
+                    disabled={loading}
+                    className="w-full pl-11 pr-11 py-3 text-sm outline-none transition-all duration-200"
+                    style={{
+                      background:   C.surface,
+                      border:       `1.5px solid ${C.border}`,
+                      borderRadius: "12px",
+                      color:        C.text,
+                      opacity:      loading ? 0.6 : 1,
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = C.brand;
+                      e.target.style.boxShadow   = `0 0 0 3px ${C.brand}18`;
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = C.border;
+                      e.target.style.boxShadow   = "none";
+                    }}
+                  />
+                  {/* Toggle mostrar contraseña */}
+                  <button
+                    type="button"
+                    onClick={() => setShowPass((p) => !p)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 transition-colors"
+                    style={{ color: showPass ? C.brand : C.textLight }}
+                    tabIndex={-1}
+                  >
+                    {showPass
+                      ? <IconEyeOff size={16} stroke={2} />
+                      : <IconEye    size={16} stroke={2} />
+                    }
+                  </button>
+                </div>
+              </div>
+
+              {/* Error */}
+              {error && (
+                <div
+                  className="flex items-start gap-3 rounded-xl px-4 py-3"
+                  style={{ background: "#FEF2F2", border: "1px solid #FCA5A530" }}
+                  role="alert"
+                >
+                  <IconAlertCircle
+                    size={16} stroke={2}
+                    className="shrink-0 mt-0.5"
+                    style={{ color: "#DC2626" }}
+                  />
+                  <p className="text-sm font-medium" style={{ color: "#DC2626" }}>
+                    {error}
+                  </p>
+                </div>
+              )}
+
+              {/* Botón */}
+              <button
+                type="submit"
+                disabled={loading || !email || !password}
+                className="w-full flex items-center justify-center gap-2.5 font-bold text-sm py-3.5 rounded-xl transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                style={{
+                  background:  C.brand,
+                  color:       "#fff",
+                  boxShadow:   "0 4px 14px rgba(200,56,79,0.3)",
+                  marginTop:   4,
+                }}
+              >
+                {loading ? (
+                  <>
+                    <IconLoader2
+                      size={18} stroke={2}
+                      style={{ animation: "spin 1s linear infinite" }}
+                    />
+                    Ingresando…
+                  </>
+                ) : (
+                  "Ingresar"
+                )}
+              </button>
+
+            </div>
+          </form>
         </div>
+
+        {/* Pie */}
+        <p
+          className="text-center text-xs mt-6"
+          style={{ color: C.textLight }}
+        >
+          Acceso restringido · Solo personal autorizado
+        </p>
       </div>
-    </div>
+    </main>
   );
 }

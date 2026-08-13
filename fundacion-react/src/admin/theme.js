@@ -49,10 +49,7 @@ export const SHADOW = {
 // `to` alimenta las rutas y `label` la barra lateral.
 export const ADMIN_NAV = [
   { to: "/admin",               label: "Panel",              icon: "dashboard", end: true },
-  { to: "/admin/contenido",     label: "Contenido del sitio", icon: "content" },
-  { to: "/admin/proyectos",     label: "Proyectos",          icon: "projects" },
-  { to: "/admin/mensajes",      label: "Mensajes",           icon: "messages" },
-  { to: "/admin/respaldos",     label: "Respaldos",          icon: "backups" },
+  { to: "/admin/medicamentos",  label: "Medicamentos",       icon: "pill" },
   { to: "/admin/sistema",       label: "Estado del sistema", icon: "system" },
   { to: "/admin/configuracion", label: "Configuración",      icon: "settings" },
 ];

@@ -1,76 +1,106 @@
-import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../../components/layout/Navbar";
-import Footer from "../../components/layout/Footer";
+import { useEffect, useRef, useState } from "react";
+import Navbar from "../layout/Navbar";
+import Footer from "../layout/Footer";
+import {
+  IconHeart,
+  IconArrowRight,
+  IconX,
+} from "@tabler/icons-react";
 
-// ─── Brand palette ────────────────────────────────────────────────────────────
-const COLORS = {
-  brand: "#F21D44",
-  secondary: "#293972",
-  accent: "#FFB119",
+const C = {
+  brand:     "#C8384F",
+  brandSoft: "#FAE8EB",
+  secondary: "#3B5BA5",
+  accent:    "#F5A623",
+  bg:        "#F7F8FA",
+  surface:   "#FFFFFF",
+  text:      "#1A2235",
+  textMid:   "#4B5563",
+  textLight: "#9CA3AF",
+  border:    "#E5E7EB",
 };
 
-// ─── Real team data ───────────────────────────────────────────────────────────
 const TEAM = [
   {
-    id: "01",
-    name: "Marco Sanchez",
-    role: "Presidente",
-    area: "Derecho",
-    img: "https://img1.wsimg.com/isteam/ip/de14c48c-6392-4155-8907-b87ab2e40fa5/Captura%20de%20pantalla%202024-05-18%20a%20la(s)%2012.23.2.png/:/cr=t:0%25,l:0.69%25,w:98.63%25,h:100%25/rs=w:600,h:800,cg:true",
-    shortBio: "Diagnosticado con leucemia mieloide cronica a los 15 anos, fundador de Mejoremos Realidades.",
-    fullBio:
-      "Un joven diagnosticado con leucemia mieloide cronica a los 15 anos, preocupado por los pacientes con leucemia y sus familias, decidio emprender Fundacion Mejoremos Realidades como un lugar en el que las personas se sintieran seguras, fueran orientadas y contaran con una red de apoyo que hiciera del diagnostico algo mas llevadero. Estudia el ultimo ano de la carrera de Derecho, cree fervientemente que hay una vida vivible durante y despues del diagnostico. Mejoremos Realidades nacio de una necesidad, pero se convirtio en un sueno que transforma vidas.",
-    discipline: "Derecho",
+    name:  "Marco Sánchez",
+    role:  "Presidente",
+    img:   "/personas/marco.jpeg",
+    short: "Fundador. Diagnosticado con leucemia mieloide crónica a los 15 años, creó Mejoremos Realidades para que nadie enfrente este camino solo.",
+    bio: [
+      "Un joven diagnosticado con leucemia mieloide crónica a los 15 años, preocupado por los pacientes con leucemia y sus familias, decidió emprender Fundación Mejoremos Realidades como un lugar en el que las personas se sintieran seguras, fueran orientadas y contaran con una red de apoyo que hiciera del diagnóstico algo más llevadero.",
+      "Egresado de la licenciatura en Derecho, cree fervientemente que hay una vida vivible durante y después del diagnóstico, y confía en que sumando esfuerzos se puede hacer mucho por los pacientes.",
+      "Mejoremos Realidades, tal como lo comenta, es de y para todos y todas; nació de una necesidad, pero se convirtió en un sueño que transforma vidas.",
+    ],
   },
   {
-    id: "02",
-    name: "Danna Martinez",
-    role: "Secretaria General",
-    area: "Medicina",
-    img: "https://img1.wsimg.com/isteam/ip/de14c48c-6392-4155-8907-b87ab2e40fa5/IMG_5646.jpg/:/cr=t:0%25,l:3.42%25,w:93.17%25,h:100%25/rs=w:600,h:800,cg:true",
-    shortBio: "Estudiante de medicina con investigacion especializada en leucemia y cancer.",
-    fullBio:
-      "Mujer estudiante de medicina que ha dedicado parte de su proceso de investigacion medica a aquello relacionado a la leucemia, derivados y cancer en general. Es una persona preocupada y ocupada por los demas, empatica y solidaria. Considera que los medicos que son el primer contacto con el paciente deben tener desarrollado su sentido humano para entender que se esta tratando con personas. Mejoremos Realidades hace del diagnostico algo mas llevadero, de tu mano.",
-    discipline: "Medicina",
+    name:  "Danna Martínez",
+    role:  "Vicepresidenta Ejecutiva",
+    img:   "/personas/danna.jpg",
+    short: "Médica egresada con experiencia en atención primaria y proyectos de impacto social. Interesada en fortalecer la educación médica para pacientes y comunidades.",
+    bio: [
+      "Egresada de la licenciatura en medicina, ha dedicado parte de su proceso de investigación médica a lo relacionado con la leucemia, sus derivados y el cáncer en general.",
+      "Es una persona preocupada y ocupada por los demás, empática y solidaria. Considera que los médicos que son el primer contacto con el paciente deben desarrollar su sentido humano para entender que se está tratando con personas y causas que les aquejan en lo que más les importa.",
+      "Considera que el diagnóstico es el paso más difícil del proceso, pero Mejoremos Realidades lo hace de tu mano.",
+    ],
   },
   {
-    id: "03",
-    name: "Maria Jose Martinez",
-    role: "Tesorera",
-    area: "Derecho",
-    img: "https://img1.wsimg.com/isteam/ip/de14c48c-6392-4155-8907-b87ab2e40fa5/8ba2053f-c359-44c9-9f98-587da44a46bd.JPG/:/cr=t:0%25,l:4.55%25,w:90.9%25,h:100%25/rs=w:600,h:800,cg:true",
-    shortBio: "Proxima abogada con enfoque en Derechos Humanos y acceso a la salud.",
-    fullBio:
-      "Estudia el ultimo ano de Derecho; sus principales lineas de accion han sido el respeto a los Derechos Humanos y la obligacion del Estado Mexicano de garantizar el acceso a ellos. En Mejoremos Realidades tiene como maximas la transparencia, rendicion de cuentas y el uso adecuado de los recursos. El Derecho Humano de acceso a los servicios de salud es fundamental para tener una calidad de vida digna.",
-    discipline: "Derecho",
+    name:  "María José Martínez",
+    role:  "Directora Jurídica y de Cumplimiento Normativo",
+    img:   "/personas/majo.jpg",
+    short: "Abogada enfocada en Derechos Humanos y el acceso garantizado a la salud para todas las personas.",
+    bio: [
+      "Licenciada en derecho, sus principales líneas de acción han sido el respeto a los Derechos Humanos y la obligación del Estado Mexicano de garantizar el acceso a ellos para todas y todos.",
+      "En Mejoremos Realidades tiene como máximas la transparencia, la rendición de cuentas y el uso adecuado de los recursos en pro de las causas que aquí se siguen.",
+      "El Derecho Humano de acceso a los servicios de salud es fundamental para tener una calidad de vida digna y en favor de los menos favorecidos.",
+    ],
   },
   {
-    id: "04",
-    name: "Diego Castilla",
-    role: "Director Institucional",
-    area: "Medicina",
-    img: "https://img1.wsimg.com/isteam/ip/de14c48c-6392-4155-8907-b87ab2e40fa5/Captura%20de%20pantalla%202024-05-20%20a%20la(s)%204.36.18.png/:/cr=t:10.9%25,l:0%25,w:100%25,h:78.21%25/rs=w:600,h:800,cg:true",
-    shortBio: "Estudiante de medicina enfocado en alianzas y atencion integral al paciente.",
-    fullBio:
-      "Estudiante de medicina con particular interes en generar alianzas que garanticen el bienestar de los pacientes con cancer. Ha dedicado parte de su labor a generar contacto de primera mano con los pacientes a fin de canalizarlos a donde su diagnostico sea tratado integralmente. Su responsabilidad, respeto, compromiso y empatia son su sello en Mejoremos Realidades.",
-    discipline: "Medicina",
+    name:  "Diego Castilla",
+    role:  "Director Médico y de Programas Institucionales",
+    img:   "/personas/diego.jpg",
+    short: "Estudiante de medicina con vocación para generar alianzas que garanticen el bienestar integral de los pacientes.",
+    bio: [
+      "Estudiante de medicina, con particular interés en generar alianzas que garanticen el bienestar de los pacientes con cáncer y calidad de vida para ellos y sus familias.",
+      "Ha dedicado parte de su labor en la medicina a generar contacto de primera mano con los pacientes a fin de canalizarlos a donde su diagnóstico sea tratado integralmente.",
+      "Es un hombre con gran sentido de pertenencia a Mejoremos Realidades, pues cree en esta Fundación como un medio para hacer del diagnóstico algo más llevadero. Su sentido de responsabilidad, respeto, compromiso y empatía es claro.",
+    ],
   },
   {
-    id: "05",
-    name: "Andrea Amaya",
-    role: "Directora de Operaciones Tecnologicas",
-    area: "Tecnologia",
-    img: "https://img1.wsimg.com/isteam/ip/de14c48c-6392-4155-8907-b87ab2e40fa5/PHOTO-2025-10-31-11-32-23.jpg/:/cr=t:0%25,l:2.38%25,w:95.24%25,h:100%25/rs=w:600,h:800,cg:true",
-    shortBio: "Licenciada en matematicas aplicadas que impulsa la innovacion con proposito humano.",
-    fullBio:
-      "Licenciada en matematicas aplicadas con un profundo interes en ayudar a las personas a traves de la tecnologia. Cree firmemente que la innovacion solo tiene sentido cuando mejora la vida de los demas y promueve la equidad, especialmente en los ambitos donde la salud y la esperanza se entrelazan. Impulsa una forma mas humana de entender la innovacion.",
-    discipline: "Matematicas Aplicadas",
+    name:  "Andrea Amaya",
+    role:  "Directora de Planeación Técnica y Análisis Estratégico",
+    img:   "/personas/andrea.jpeg",
+    short: "Matemática aplicada que impulsa la innovación tecnológica al servicio de la equidad y la salud.",
+    bio: [
+      "Licenciada en matemáticas aplicadas con un profundo interés en ayudar a las personas a través de la tecnología. Cree firmemente que la innovación solo tiene sentido cuando mejora la vida de los demás y promueve la equidad.",
+      "En Mejoremos Realidades impulsa una forma más humana de entender la innovación como Directora de Planeación Técnica y Análisis Estratégico.",
+    ],
+  },
+  {
+    name:  "Jovita Rodríguez González",
+    role:  "Directora de Atención Integral y Acompañamiento",
+    img:   "/personas/jovita.jpeg",
+    short: "Madre de un paciente con leucemia, lleva la experiencia vivida al corazón del acompañamiento integral.",
+    bio: [
+      "Como madre de un paciente con leucemia, ha experimentado de primera mano los retos, las incertidumbres y las necesidades que enfrentan las personas diagnosticadas y sus familias. Esta vivencia le ha permitido desarrollar una profunda sensibilidad y un firme compromiso con el acompañamiento integral.",
+      "En Fundación Mejoremos Realidades A.C. dirige el área de Atención Integral y Acompañamiento, coordinando acciones orientadas a brindar orientación, apoyo y seguimiento a pacientes y cuidadores.",
+      "Su labor refleja el compromiso de la Fundación con un acompañamiento basado en la empatía y la convicción de que ningún paciente ni su familia deben enfrentar la leucemia en soledad.",
+    ],
+  },
+  {
+    name:  "Gabriela Gómez Cruz",
+    role:  "Directora de Relaciones Estratégicas y Proyección Institucional",
+    img:   "/personas/gaby.jpg",
+    short: "Arquitecta e ingeniera con visión estratégica para posicionar la Fundación y construir alianzas de impacto.",
+    bio: [
+      "Arquitecta e ingeniera con amplia experiencia en el desarrollo, coordinación y gestión de proyectos, así como en el fortalecimiento de relaciones institucionales.",
+      "Al frente de la Dirección de Relaciones Estratégicas y Proyección Institucional, impulsa la imagen institucional de la Fundación, fortalece su presencia ante diversos sectores y consolida alianzas clave.",
+      "Su liderazgo amplía el alcance de los programas y fortalece el impacto social, promoviendo iniciativas que beneficien a las personas que viven con leucemia y a sus familias.",
+    ],
   },
 ];
 
-// ─── Reveal hook ──────────────────────────────────────────────────────────────
-function useReveal(threshold = 0.1) {
+function useReveal(threshold = 0.08) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -86,75 +116,110 @@ function useReveal(threshold = 0.1) {
   return [ref, visible];
 }
 
-// ─── Cursor glow ──────────────────────────────────────────────────────────────
-function CursorGlow() {
-  const [pos, setPos] = useState({ x: -400, y: -400 });
-  useEffect(() => {
-    const fn = (e) => setPos({ x: e.clientX, y: e.clientY });
-    window.addEventListener("mousemove", fn);
-    return () => window.removeEventListener("mousemove", fn);
-  }, []);
+function SectionLabel({ children, light = false }) {
   return (
-    <div
-      className="pointer-events-none fixed z-0 rounded-full"
-      style={{
-        width: 500,
-        height: 500,
-        left: pos.x - 250,
-        top: pos.y - 250,
-        background: `radial-gradient(circle, ${COLORS.secondary}18 0%, transparent 65%)`,
-        transition: "left 0.18s ease, top 0.18s ease",
-      }}
-    />
+    <div className="flex items-center gap-3 mb-4">
+      <IconHeart size={15} stroke={2} style={{ color: light ? "rgba(255,255,255,0.6)" : C.brand }} />
+      <span className="text-xs font-bold tracking-widest uppercase"
+        style={{ color: light ? "rgba(255,255,255,0.65)" : C.brand }}>
+        {children}
+      </span>
+    </div>
   );
 }
 
-// ─── Hero ─────────────────────────────────────────────────────────────────────
-function TeamHero() {
+// ─── Modal ────────────────────────────────────────────────────────────────────
+function ProfileModal({ member, onClose }) {
+  useEffect(() => {
+    const fn = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", fn);
+    return () => window.removeEventListener("keydown", fn);
+  }, [onClose]);
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
   return (
-    <section className="relative min-h-[58vh] flex items-end overflow-hidden pt-20" style={{ background: "#0B0E1A" }}>
-      {/* Grid bg */}
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "rgba(10,14,30,0.82)", backdropFilter: "blur(8px)" }}
+      onClick={onClose}
+    >
       <div
-        className="absolute inset-0 opacity-[0.025]"
-        style={{
-          backgroundImage: `repeating-linear-gradient(0deg, #fff 0, #fff 1px, transparent 0, transparent 80px),
-                            repeating-linear-gradient(90deg, #fff 0, #fff 1px, transparent 0, transparent 80px)`,
-        }}
-      />
-      {/* Brand left bar */}
-      <div className="absolute left-0 top-0 bottom-0 w-1" style={{ background: COLORS.brand }} />
-      {/* Secondary glow right */}
-      <div
-        className="absolute right-0 top-0 bottom-0 w-1/2 pointer-events-none"
-        style={{ background: `radial-gradient(ellipse at right center, ${COLORS.secondary}25 0%, transparent 70%)` }}
-      />
-      {/* Ghosted large number */}
-      <div
-        className="absolute right-4 bottom-0 font-black select-none leading-none"
-        style={{ fontSize: "clamp(8rem,22vw,20rem)", color: COLORS.brand, opacity: 0.04 }}
+        className="relative w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl"
+        style={{ background: C.surface, maxHeight: "90vh" }}
+        onClick={(e) => e.stopPropagation()}
       >
-        05
+        <div className="relative h-64 overflow-hidden">
+          <img src={member.img} alt={member.name}
+            className="w-full h-full object-cover object-top" />
+          <div className="absolute inset-0"
+            style={{ background: "linear-gradient(to top, rgba(10,14,30,0.9) 0%, rgba(10,14,30,0.2) 60%, transparent 100%)" }} />
+          <button onClick={onClose}
+            className="absolute top-4 right-4 flex items-center justify-center rounded-full transition-all hover:scale-110"
+            style={{ width: 38, height: 38, background: "rgba(255,255,255,0.15)", backdropFilter: "blur(4px)", color: "#fff" }}>
+            <IconX size={18} stroke={2} />
+          </button>
+          <div className="absolute bottom-5 left-7">
+            <div className="font-black text-2xl" style={{ color: "#fff", letterSpacing: "-0.02em" }}>{member.name}</div>
+            <div className="text-xs font-bold tracking-widest uppercase mt-1" style={{ color: C.brand }}>{member.role}</div>
+          </div>
+        </div>
+        <div className="p-8 overflow-y-auto space-y-4" style={{ maxHeight: "calc(90vh - 256px)" }}>
+          {member.bio.map((p, i) => (
+            <p key={i} className="text-base leading-relaxed" style={{ color: C.textMid }}>{p}</p>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Hero — foto grupal ───────────────────────────────────────────────────────
+function Hero() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setMounted(true), 80); return () => clearTimeout(t); }, []);
+  const rise = (delay = 0) => ({
+    transition: `opacity .9s cubic-bezier(.16,1,.3,1) ${delay}ms, transform .9s cubic-bezier(.16,1,.3,1) ${delay}ms`,
+    opacity: mounted ? 1 : 0,
+    transform: mounted ? "translateY(0)" : "translateY(24px)",
+  });
+
+  return (
+    <section className="relative flex items-end overflow-hidden" style={{ minHeight: "80vh" }}>
+      <style>{`
+        @keyframes slowzoom { from { transform: scale(1); } to { transform: scale(1.06); } }
+        .hero-img { animation: slowzoom 14s ease-in-out infinite alternate; }
+        @media (prefers-reduced-motion: reduce) { .hero-img { animation: none; } }
+      `}</style>
+
+      {/* Foto grupal con zoom lento */}
+      <div className="absolute inset-0 overflow-hidden">
+        <img src="/personas/equipo.jpeg" alt="Equipo Mejoremos Realidades"
+          className="hero-img w-full h-full object-cover object-center" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-8 pb-20 w-full">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-8 h-px" style={{ background: COLORS.accent }} />
-          <p className="text-xs font-bold tracking-[0.5em] uppercase" style={{ color: COLORS.accent }}>
-            Las personas detras de la causa
-          </p>
-        </div>
-        <h1
-          className="font-black text-white leading-[0.88] mb-8"
-          style={{ fontSize: "clamp(3.5rem, 9vw, 8rem)" }}
-        >
-          Nuestro
-          <br />
-          <span style={{ color: COLORS.brand }}>Equipo.</span>
-        </h1>
-        <div className="flex items-center gap-6">
-          <div className="w-14 h-px" style={{ background: COLORS.accent }} />
-          <p className="text-sm tracking-widest uppercase font-medium" style={{ color: "rgba(255,255,255,0.4)" }}>
-            5 personas — 1 mision
+      {/* Overlay — más denso abajo */}
+      <div className="absolute inset-0" style={{
+        background: "linear-gradient(to bottom, rgba(10,14,30,0.2) 0%, rgba(10,14,30,0.55) 45%, rgba(10,14,30,0.94) 100%)",
+      }} />
+      <div className="absolute bottom-0 left-0 pointer-events-none" style={{
+        width: "50rem", height: "30rem",
+        background: `radial-gradient(ellipse at 0% 100%, ${C.brand}28 0%, transparent 60%)`,
+      }} />
+
+      <div className="relative z-10 w-full px-8 sm:px-14 lg:px-20 pb-24 pt-40">
+        <div className="max-w-7xl">
+          <div style={rise(0)}><SectionLabel light>Las personas detrás de la causa</SectionLabel></div>
+          <h1 className="font-black leading-none mb-5"
+            style={{ ...rise(120), fontSize: "clamp(3rem, 8vw, 7rem)", color: "#fff", letterSpacing: "-0.03em" }}>
+            Nuestro <span style={{ color: C.brand }}>equipo</span>
+          </h1>
+          <p className="text-base leading-relaxed max-w-xl"
+            style={{ ...rise(240), color: "rgba(255,255,255,0.68)" }}>
+            Médicos, abogados, especialistas y personas con experiencia propia, unidos por
+            un mismo propósito: que ningún paciente con leucemia enfrente solo su diagnóstico.
           </p>
         </div>
       </div>
@@ -162,444 +227,167 @@ function TeamHero() {
   );
 }
 
-// ─── Stats strip ──────────────────────────────────────────────────────────────
-function TeamStats() {
-  const [ref, visible] = useReveal(0.2);
-  return (
-    <div ref={ref} style={{ background: COLORS.secondary, borderTop: `1px solid ${COLORS.accent}30` }}>
-      <div className="max-w-7xl mx-auto px-8 grid grid-cols-2 md:grid-cols-4 divide-x py-10" style={{ divideColor: "rgba(255,255,255,0.1)" }}>
-        {[
-          { n: "5", label: "Integrantes" },
-          { n: "3", label: "Disciplinas" },
-          { n: "2019", label: "Desde" },
-          { n: "1", label: "Mision" },
-        ].map((s, i) => (
-          <div
-            key={s.label}
-            className={`px-8 text-center transition-all duration-700 border-r border-white/10 ${
-              visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}
-            style={{ transitionDelay: `${i * 80}ms` }}
-          >
-            <div className="font-black text-4xl mb-1" style={{ color: COLORS.accent }}>{s.n}</div>
-            <div className="text-white/50 text-[10px] tracking-[0.3em] uppercase">{s.label}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ─── Filter tabs ──────────────────────────────────────────────────────────────
-function FilterTabs({ active, onChange }) {
-  const tabs = ["Todos", "Derecho", "Medicina", "Tecnologia", "Matematicas Aplicadas"];
-  return (
-    <div className="flex gap-2 flex-wrap">
-      {tabs.map((t) => (
-        <button
-          key={t}
-          onClick={() => onChange(t)}
-          className="text-[10px] tracking-[0.3em] uppercase font-bold px-5 py-2.5 transition-all duration-300"
-          style={
-            active === t
-              ? { background: COLORS.brand, color: "#fff" }
-              : { border: `1px solid ${COLORS.secondary}60`, color: "rgba(255,255,255,0.35)" }
-          }
-          onMouseEnter={e => { if (active !== t) { e.currentTarget.style.borderColor = COLORS.accent; e.currentTarget.style.color = COLORS.accent; } }}
-          onMouseLeave={e => { if (active !== t) { e.currentTarget.style.borderColor = `${COLORS.secondary}60`; e.currentTarget.style.color = "rgba(255,255,255,0.35)"; } }}
-        >
-          {t}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-// ─── View toggle ──────────────────────────────────────────────────────────────
-function ViewToggle({ mode, onChange }) {
-  return (
-    <div className="flex gap-1 p-1" style={{ border: `1px solid ${COLORS.secondary}50` }}>
-      {[{ key: "featured", label: "Destacado" }, { key: "grid", label: "Cuadricula" }].map((v) => (
-        <button
-          key={v.key}
-          onClick={() => onChange(v.key)}
-          className="px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200"
-          style={mode === v.key ? { background: COLORS.secondary, color: "#fff" } : { color: "rgba(255,255,255,0.3)" }}
-        >
-          {v.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-// ─── Featured card ────────────────────────────────────────────────────────────
-function MemberCardFeatured({ member, index, visible }) {
+// ─── Card de cada miembro — ancho completo ────────────────────────────────────
+function MemberRow({ member, index }) {
+  const [ref, visible] = useReveal();
   const [hovered, setHovered] = useState(false);
-  const [bioOpen, setBioOpen] = useState(false);
+  const [selected, setSelected] = useState(null);
   const isEven = index % 2 === 0;
 
   return (
-    <div
-      className={`transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-16"}`}
-      style={{ transitionDelay: `${index * 100}ms` }}
-    >
+    <>
       <div
-        className="grid lg:grid-cols-2 gap-0 border transition-all duration-500"
-        style={{ borderColor: hovered ? `${COLORS.accent}40` : `${COLORS.secondary}30`, background: "#0D1020" }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
-        {/* Image */}
-        <div className={`relative overflow-hidden h-[460px] ${isEven ? "" : "lg:order-2"}`}>
-          <img
-            src={member.img}
-            alt={member.name}
-            className={`w-full h-full object-cover object-top transition-all duration-700 ${
-              hovered ? "scale-105 grayscale-0" : "grayscale scale-100"
-            }`}
-          />
-          {/* Overlay */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background: isEven
-                ? `linear-gradient(to right, transparent 40%, #0D1020)`
-                : `linear-gradient(to left, transparent 40%, #0D1020)`,
-            }}
-          />
-          <div className="absolute inset-0" style={{ background: "linear-gradient(to top, #0D1020 0%, transparent 50%)" }} />
-
-          {/* Ghost number */}
-          <div
-            className="absolute top-5 left-5 font-black select-none leading-none"
-            style={{ fontSize: "6rem", color: "#fff", opacity: 0.05 }}
-          >
-            {member.id}
-          </div>
-
-          {/* Discipline pill */}
-          <div className="absolute bottom-5 left-5">
-            <span
-              className="text-[9px] font-bold tracking-[0.3em] uppercase px-3 py-1.5"
-              style={{ background: COLORS.secondary, color: COLORS.accent }}
-            >
-              {member.discipline}
-            </span>
-          </div>
-
-          {/* Gold bottom bar on hover */}
-          <div
-            className="absolute bottom-0 left-0 right-0 h-0.5 transition-transform duration-500 origin-left"
-            style={{ background: COLORS.accent, transform: hovered ? "scaleX(1)" : "scaleX(0)" }}
-          />
-        </div>
-
-        {/* Content */}
-        <div className={`flex flex-col justify-center p-10 lg:p-14 relative ${isEven ? "" : "lg:order-1"}`}>
-          {/* Area label */}
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-5 h-px" style={{ background: COLORS.accent }} />
-            <p className="text-[10px] font-bold tracking-[0.4em] uppercase" style={{ color: COLORS.accent }}>
-              {member.area} — {member.role}
-            </p>
-          </div>
-
-          {/* Name */}
-          <h2
-            className="font-black text-white leading-tight mb-3"
-            style={{ fontSize: "clamp(1.8rem, 3vw, 2.8rem)" }}
-          >
-            {member.name}
-          </h2>
-
-          {/* Animated underline */}
-          <div
-            className="h-1 mb-6 rounded-full transition-all duration-500"
-            style={{ background: COLORS.brand, width: hovered ? "80px" : "36px" }}
-          />
-
-          {/* Short bio */}
-          <p className="text-white/55 text-sm leading-relaxed mb-4">{member.shortBio}</p>
-
-          {/* Full bio accordion */}
-          <div
-            className="overflow-hidden transition-all duration-500"
-            style={{ maxHeight: bioOpen ? "360px" : "0px" }}
-          >
-            <p
-              className="text-white/40 text-sm leading-relaxed pb-5 pl-4 border-l"
-              style={{ borderColor: `${COLORS.secondary}80` }}
-            >
-              {member.fullBio}
-            </p>
-          </div>
-
-          {/* Toggle */}
-          <button
-            onClick={() => setBioOpen(!bioOpen)}
-            className="inline-flex items-center gap-3 text-[10px] font-bold tracking-[0.3em] uppercase w-fit mt-2 transition-colors"
-            style={{ color: COLORS.brand }}
-          >
-            {bioOpen ? "Cerrar" : "Leer mas"}
-            <span
-              className="w-5 h-5 flex items-center justify-center border transition-transform duration-300"
-              style={{ borderColor: COLORS.brand, transform: bioOpen ? "rotate(45deg)" : "rotate(0deg)" }}
-            >
-              <span className="block w-2.5 h-px" style={{ background: COLORS.brand }} />
-            </span>
-          </button>
-
-          {/* Ghost number corner */}
-          <div
-            className="absolute bottom-4 right-6 font-black select-none"
-            style={{ fontSize: "5rem", color: COLORS.secondary, opacity: 0.3 }}
-          >
-            {member.id}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── Grid card ────────────────────────────────────────────────────────────────
-function MemberCardGrid({ member, index, visible }) {
-  const [hovered, setHovered] = useState(false);
-  const [bioOpen, setBioOpen] = useState(false);
-
-  return (
-    <div
-      className={`transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
-      style={{ transitionDelay: `${index * 80}ms` }}
-    >
-      <div
-        className="border transition-all duration-400 h-full flex flex-col"
+        ref={ref}
+        className={`group relative overflow-hidden cursor-pointer transition-all duration-700 ${
+          visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+        }`}
         style={{
-          borderColor: hovered ? `${COLORS.accent}50` : `${COLORS.secondary}30`,
-          background: "#0D1020",
+          transitionDelay: `${index * 60}ms`,
+          borderBottom: `1px solid ${C.border}`,
         }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
+        onClick={() => setSelected(member)}
       >
-        {/* Image */}
-        <div className="relative h-72 overflow-hidden flex-shrink-0">
-          <img
-            src={member.img}
-            alt={member.name}
-            className={`w-full h-full object-cover object-top transition-all duration-700 ${
-              hovered ? "scale-108 grayscale-0" : "grayscale scale-100"
-            }`}
-          />
-          <div className="absolute inset-0" style={{ background: "linear-gradient(to top, #0D1020 0%, transparent 55%)" }} />
+        {/* Layout: imagen + info, alternado */}
+        <div className={`grid md:grid-cols-2 ${isEven ? "" : "md:[direction:rtl]"}`}
+          style={{ minHeight: 340 }}>
 
-          {/* Number */}
+          {/* Foto */}
+          <div className="relative overflow-hidden" style={{ minHeight: 340 }}>
+            <img
+              src={member.img}
+              alt={member.name}
+              className="w-full h-full object-cover object-top transition-transform duration-700"
+              style={{
+                transform: hovered ? "scale(1.07)" : "scale(1)",
+                minHeight: 340,
+              }}
+            />
+            {/* Overlay foto */}
+            <div className="absolute inset-0 transition-opacity duration-500"
+              style={{
+                background: isEven
+                  ? "linear-gradient(to right, transparent 55%, rgba(247,248,250,1) 100%)"
+                  : "linear-gradient(to left,  transparent 55%, rgba(247,248,250,1) 100%)",
+                opacity: hovered ? 0.6 : 1,
+              }} />
+            {/* Número de índice decorativo */}
+            <div
+              className="absolute top-6 transition-all duration-500"
+              style={{
+                [isEven ? "left" : "right"]: 24,
+                opacity: hovered ? 0 : 0.12,
+                fontSize: "7rem",
+                fontWeight: 900,
+                lineHeight: 1,
+                color: C.brand,
+                letterSpacing: "-0.06em",
+                userSelect: "none",
+              }}>
+              {String(index + 1).padStart(2, "0")}
+            </div>
+          </div>
+
+          {/* Texto */}
           <div
-            className="absolute top-3 right-4 font-black select-none"
-            style={{ fontSize: "3.5rem", color: "#fff", opacity: 0.05, lineHeight: 1 }}
+            className="flex flex-col justify-center px-12 py-12"
+            style={{ direction: "ltr", background: hovered ? C.brandSoft : C.bg, transition: "background 0.4s" }}
           >
-            {member.id}
-          </div>
-
-          {/* Discipline */}
-          <div className="absolute bottom-4 left-4">
-            <span
-              className="text-[8px] font-bold tracking-[0.3em] uppercase px-3 py-1.5"
-              style={{ background: COLORS.secondary, color: COLORS.accent }}
-            >
-              {member.discipline}
-            </span>
-          </div>
-
-          {/* Gold bar */}
-          <div
-            className="absolute bottom-0 left-0 right-0 h-0.5 transition-transform duration-400 origin-left"
-            style={{ background: COLORS.accent, transform: hovered ? "scaleX(1)" : "scaleX(0)" }}
-          />
-        </div>
-
-        {/* Info */}
-        <div className="p-6 flex flex-col flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-4 h-px" style={{ background: COLORS.accent }} />
-            <p className="text-[9px] font-bold tracking-[0.4em] uppercase" style={{ color: COLORS.accent }}>
+            {/* Rol */}
+            <div className="text-xs font-bold tracking-widest uppercase mb-3 transition-colors duration-300"
+              style={{ color: C.brand }}>
               {member.role}
+            </div>
+            {/* Nombre */}
+            <h2
+              className="font-black leading-tight mb-4 transition-all duration-300"
+              style={{
+                fontSize: "clamp(1.8rem, 3vw, 2.6rem)",
+                color: C.text,
+                letterSpacing: "-0.025em",
+                transform: hovered ? "translateX(8px)" : "translateX(0)",
+              }}>
+              {member.name}
+            </h2>
+            {/* Short bio */}
+            <p className="text-base leading-relaxed mb-6" style={{ color: C.textMid, maxWidth: "38ch" }}>
+              {member.short}
             </p>
+            {/* CTA */}
+            <div className="inline-flex items-center gap-2 text-sm font-bold transition-all duration-300"
+              style={{
+                color: C.brand,
+                transform: hovered ? "translateX(6px)" : "translateX(0)",
+              }}>
+              Ver perfil completo
+              <IconArrowRight size={16} stroke={2.25} />
+            </div>
           </div>
-          <h3 className="font-black text-white text-xl leading-tight mb-3">{member.name}</h3>
-          <div
-            className="h-0.5 mb-4 rounded-full transition-all duration-400"
-            style={{ background: COLORS.brand, width: hovered ? "50px" : "24px" }}
-          />
-          <p className="text-white/45 text-xs leading-relaxed mb-4 flex-1">{member.shortBio}</p>
-
-          {/* Accordion */}
-          <div
-            className="overflow-hidden transition-all duration-500"
-            style={{ maxHeight: bioOpen ? "280px" : "0px" }}
-          >
-            <p
-              className="text-white/35 text-xs leading-relaxed pb-4 pl-3 border-l"
-              style={{ borderColor: `${COLORS.secondary}60` }}
-            >
-              {member.fullBio}
-            </p>
-          </div>
-
-          <button
-            onClick={() => setBioOpen(!bioOpen)}
-            className="inline-flex items-center gap-2 text-[9px] font-bold tracking-[0.3em] uppercase mt-auto w-fit"
-            style={{ color: COLORS.brand }}
-          >
-            <span
-              className="w-4 h-4 flex items-center justify-center border transition-transform duration-300"
-              style={{ borderColor: COLORS.brand, transform: bioOpen ? "rotate(45deg)" : "rotate(0deg)" }}
-            >
-              <span className="w-2 h-px" style={{ background: COLORS.brand, display: "block" }} />
-            </span>
-            {bioOpen ? "Cerrar" : "Ver mas"}
-          </button>
         </div>
       </div>
-    </div>
+
+      {selected && (
+        <ProfileModal member={selected} onClose={() => setSelected(null)} />
+      )}
+    </>
   );
 }
 
-// ─── Team grid section ────────────────────────────────────────────────────────
-function TeamGrid() {
-  const [ref, visible] = useReveal(0.05);
-  const [filter, setFilter] = useState("Todos");
-  const [viewMode, setViewMode] = useState("featured");
-
-  const filtered =
-    filter === "Todos"
-      ? TEAM
-      : TEAM.filter((m) => m.discipline === filter || m.area === filter);
-
-  return (
-    <section ref={ref} className="py-24 px-6" style={{ background: "#0B0E1A" }}>
-      <div className="max-w-7xl mx-auto">
-
-        {/* Controls */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-16">
-          <FilterTabs active={filter} onChange={setFilter} />
-          <ViewToggle mode={viewMode} onChange={setViewMode} />
-        </div>
-
-        {/* Featured */}
-        {viewMode === "featured" && (
-          <div className="flex flex-col gap-px" style={{ background: `${COLORS.secondary}20` }}>
-            {filtered.map((m, i) => (
-              <MemberCardFeatured key={m.id} member={m} index={i} visible={visible} />
-            ))}
-          </div>
-        )}
-
-        {/* Grid */}
-        {viewMode === "grid" && (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filtered.map((m, i) => (
-              <MemberCardGrid key={m.id} member={m} index={i} visible={visible} />
-            ))}
-          </div>
-        )}
-
-        {filtered.length === 0 && (
-          <div className="text-center py-24">
-            <p className="text-sm tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.2)" }}>
-              Sin resultados para este filtro
-            </p>
-          </div>
-        )}
-      </div>
-    </section>
-  );
-}
-
-// ─── Join CTA ─────────────────────────────────────────────────────────────────
-function JoinCTA() {
+// ─── CTA ──────────────────────────────────────────────────────────────────────
+function CtaBanner() {
   const [ref, visible] = useReveal();
   return (
-    <section
-      ref={ref}
-      className="relative py-32 px-6 overflow-hidden"
-      style={{ background: COLORS.secondary }}
-    >
-      {/* Texture */}
-      <div
-        className="absolute inset-0 opacity-[0.06]"
-        style={{
-          backgroundImage: `repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 32px)`,
-          backgroundSize: "32px 32px",
-        }}
-      />
-      {/* Gold top strip */}
-      <div className="absolute top-0 left-0 right-0 h-1" style={{ background: COLORS.accent }} />
-      {/* Brand bottom strip */}
-      <div className="absolute bottom-0 left-0 right-0 h-1" style={{ background: COLORS.brand }} />
-
-      <div
-        className={`max-w-3xl mx-auto text-center relative z-10 transition-all duration-1000 ${
-          visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
-      >
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <div className="w-8 h-px" style={{ background: COLORS.accent }} />
-          <p className="text-xs font-bold tracking-[0.5em] uppercase" style={{ color: COLORS.accent }}>
-            Suma tu talento
-          </p>
-          <div className="w-8 h-px" style={{ background: COLORS.accent }} />
+    <section ref={ref} className="py-24 px-8 sm:px-14 lg:px-20" style={{ background: C.brand }}>
+      <div className={`max-w-7xl grid md:grid-cols-2 gap-10 items-center transition-all duration-700 ${
+        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+      }`}>
+        <div>
+          <div className="text-xs font-bold tracking-widest uppercase mb-3"
+            style={{ color: "rgba(255,255,255,0.6)" }}>Únete a la causa</div>
+          <h2 className="font-black leading-tight"
+            style={{ fontSize: "clamp(2rem, 5vw, 3rem)", color: "#fff", letterSpacing: "-0.025em" }}>
+            Sé parte de{" "}
+            <span style={{ color: C.accent }}>nuestra misión</span>
+          </h2>
         </div>
-
-        <h2
-          className="font-black text-white leading-tight mb-6"
-          style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)" }}
-        >
-          Forma parte del
-          <br />
-          <span style={{ color: COLORS.accent }}>cambio.</span>
-        </h2>
-
-        <p className="text-white/55 text-base leading-relaxed mb-10 max-w-lg mx-auto">
-          Buscamos profesionistas y estudiantes comprometidos con la salud, el derecho y
-          el bienestar de quienes mas lo necesitan.
-        </p>
-
-        <div className="flex flex-wrap gap-4 justify-center">
-          <a
-            href="mailto:mejoremosrealidadesfundacion@gmail.com"
-            className="font-bold text-xs tracking-widest uppercase px-8 py-4 transition-all duration-300 inline-block"
-            style={{ background: COLORS.brand, color: "#fff" }}
-            onMouseEnter={e => { e.currentTarget.style.background = COLORS.accent; e.currentTarget.style.color = "#0B0E1A"; }}
-            onMouseLeave={e => { e.currentTarget.style.background = COLORS.brand; e.currentTarget.style.color = "#fff"; }}
-          >
-            Contactanos
-          </a>
-          <Link
-            to="/acerca-de"
-            className="font-medium text-xs tracking-widest uppercase px-8 py-4 border transition-all duration-300 inline-block text-white"
-            style={{ borderColor: "rgba(255,255,255,0.3)" }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = COLORS.accent; e.currentTarget.style.color = COLORS.accent; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)"; e.currentTarget.style.color = "#fff"; }}
-          >
-            Conoce la fundacion
-          </Link>
+        <div className="flex flex-col gap-4 md:items-end">
+          <p className="text-base leading-relaxed md:text-right max-w-sm"
+            style={{ color: "rgba(255,255,255,0.78)" }}>
+            Juntos podemos acompañar a más pacientes y familias que enfrentan un diagnóstico que cambia la vida.
+          </p>
+          <div className="flex flex-wrap gap-4">
+            <Link to="/donar"
+              className="inline-flex items-center gap-2 font-bold text-sm px-9 py-4 rounded-full transition-all duration-200 hover:-translate-y-0.5"
+              style={{ background: "#fff", color: C.brand }}>
+              <IconHeart size={18} stroke={2} /> Donar ahora
+            </Link>
+            <Link to="/servicios"
+              className="inline-flex items-center gap-2 font-semibold text-sm px-9 py-4 rounded-full border-2 transition-all duration-200 hover:-translate-y-0.5"
+              style={{ borderColor: "rgba(255,255,255,0.45)", color: "#fff" }}>
+              Nuestros servicios
+            </Link>
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function Equipo() {
   return (
-    <div className="min-h-screen font-sans relative" style={{ background: "#0B0E1A" }}>
-      <CursorGlow />
+    <div className="min-h-screen font-sans" style={{ background: C.bg }}>
       <Navbar />
-      <TeamHero />
-      <TeamStats />
-      <TeamGrid />
-      <JoinCTA />
+      <Hero />
+
+      {/* Todos en filas de ancho completo */}
+      <div style={{ background: C.bg }}>
+        {TEAM.map((m, i) => (
+          <MemberRow key={m.name} member={m} index={i} />
+        ))}
+      </div>
+
+      <CtaBanner />
       <Footer />
     </div>
   );

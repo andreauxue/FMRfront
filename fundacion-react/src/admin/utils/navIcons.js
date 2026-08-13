@@ -10,6 +10,7 @@ import {
   IconDatabaseExport,
   IconServer2,
   IconSettings,
+  IconPill,
 } from "@tabler/icons-react";
 
 // Traduce las claves de ADMIN_NAV (theme.js) a componentes de icono Tabler.
@@ -25,4 +26,5 @@ export const NAV_ICONS = {
   backups:   IconDatabaseExport,
   system:    IconServer2,
   settings:  IconSettings,
+  pill: IconPill,
 };

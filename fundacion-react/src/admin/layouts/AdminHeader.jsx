@@ -1,6 +1,6 @@
 import { IconMenu2, IconExternalLink } from "@tabler/icons-react";
 import { C, R } from "../theme";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../auth/AuthContext";
 
 // Cabecera administrativa. Incluye el botón que abre la barra lateral en móvil,
 // un enlace para ver el sitio público y el usuario en sesión.

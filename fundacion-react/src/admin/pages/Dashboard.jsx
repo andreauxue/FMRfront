@@ -24,8 +24,6 @@ import { C, R, SHADOW } from "../theme";
 const ACCESOS_RAPIDOS = [
   { to: "/admin/proyectos",     label: "Nuevo proyecto",    icon: IconStack2 },
   { to: "/admin/publicaciones", label: "Nueva publicación", icon: IconNews },
-  { to: "/admin/mensajes",      label: "Ver mensajes",      icon: IconMail },
-  { to: "/admin/respaldos",     label: "Generar respaldo",  icon: IconDatabaseExport },
 ];
 
 export default function Dashboard() {
