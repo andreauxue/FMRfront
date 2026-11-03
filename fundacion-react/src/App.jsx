@@ -7,7 +7,7 @@ import Servicios from "./components/sections/Servicios";
 import Causas from "./components/sections/Causas";
 import Embajadores from "./components/sections/Embajadores";
 import Alianzas from "./components/sections/Alianzas";
-import Donaciones from "./components/sections/donar";
+import Donaciones from "./components/sections/Donar";
 import Directorio from "./components/sections/Directorio";
 
 function App() {
