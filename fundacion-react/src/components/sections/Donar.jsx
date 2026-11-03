@@ -3,7 +3,7 @@ import Footer from "../layout/Footer";
 
 import { C } from "../donar/tokens";
 
-import DonarHero from "../donar/DonarHero";
+import DonarHero from "../donar/Donarhero";
 import MedicamentosStock from "../medicamentos/MedicamentosStock";
 import PorQueDona from "../donar/PorQueDona";
 import DonacionesEspecie from "../donar/DonacionesEspecie";
