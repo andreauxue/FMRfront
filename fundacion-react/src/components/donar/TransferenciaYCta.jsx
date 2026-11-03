@@ -1,273 +1,481 @@
-// src/public/pages/donar/TransferenciaYCta.jsx
+
 import { Link } from "react-router-dom";
+
+import {
+  motion,
+  useReducedMotion,
+} from "framer-motion";
+
 import {
   IconArrowRight,
   IconBuildingBank,
-  IconCalendarClock,
-  IconHeart,
-  IconSparkles,
 } from "@tabler/icons-react";
-import { C, useReveal } from "./tokens";
+
+import { C } from "./tokens";
 import SectionLabel from "./SectionLabel";
 
-/* ─── Transferencia próximamente ─────────────────────────────────────────────── */
+// ============================================================
+// CONFIGURACIÓN
+// ============================================================
+
+const EASE = [0.22, 1, 0.36, 1];
+
+const CONTACT_URL =
+  "https://fmejoremosrealidades.org/#fdeef950-e119-415e-a3a4-6a68bdb8f57b";
+
+const fadeUp = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+  },
+};
+
+const VIEWPORT = {
+  once: true,
+  amount: 0.15,
+};
+
+// ============================================================
+// ESTADO DE TRANSFERENCIA
+// ============================================================
+
+function TransferStatus() {
+  return (
+    <div
+      className="
+        flex items-center
+        gap-2
+      "
+    >
+      <span
+        className="
+          h-2 w-2
+          rounded-full
+        "
+        style={{
+          backgroundColor: C.brand,
+        }}
+        aria-hidden="true"
+      />
+
+      <span
+        className="
+          text-[11px]
+          font-bold uppercase
+          tracking-[0.12em]
+        "
+        style={{ color: C.brand }}
+      >
+        Próximamente
+      </span>
+    </div>
+  );
+}
+
+// ============================================================
+// INFORMACIÓN BANCARIA
+// ============================================================
+
+function BankInformation() {
+  const reducedMotion = useReducedMotion();
+
+  return (
+    <motion.div
+      variants={reducedMotion ? undefined : fadeUp}
+      initial={reducedMotion ? false : "hidden"}
+      whileInView="visible"
+      viewport={VIEWPORT}
+      transition={{
+        duration: reducedMotion ? 0 : 0.7,
+        delay: reducedMotion ? 0 : 0.1,
+        ease: EASE,
+      }}
+      className="
+        grid grid-cols-1
+        overflow-hidden
+        border
+        bg-white
+        lg:grid-cols-[0.35fr_0.65fr]
+      "
+      style={{
+        borderColor: C.border,
+      }}
+    >
+      {/* Columna institucional */}
+      <div
+        className="
+          flex flex-col
+          justify-between
+          gap-8
+          px-7 py-8
+          sm:px-9 sm:py-10
+          lg:min-h-[340px]
+        "
+        style={{
+          backgroundColor: C.text,
+        }}
+      >
+        <div>
+          <IconBuildingBank
+            size={32}
+            stroke={1.25}
+            className="mb-6 text-white"
+            aria-hidden="true"
+          />
+
+          <p
+            className="
+              mb-2
+              text-[11px]
+              font-bold uppercase
+              tracking-[0.12em]
+              text-white/55
+            "
+          >
+            Donación económica
+          </p>
+
+          <h3
+            className="
+              max-w-[280px]
+              text-[clamp(1.5rem,2.5vw,2rem)]
+              font-bold
+              leading-[1.25]
+              tracking-[-0.035em]
+              text-white
+            "
+          >
+            Datos bancarios
+          </h3>
+        </div>
+
+        <p
+          className="
+            max-w-[290px]
+            text-[13px]
+            leading-[1.75]
+            text-white/65
+          "
+        >
+          Estamos preparando una nueva forma
+          de contribuir a nuestra causa.
+        </p>
+      </div>
+
+      {/* Columna informativa */}
+      <div
+        className="
+          flex flex-col
+          justify-center
+          px-7 py-9
+          sm:px-10 sm:py-12
+          lg:px-14
+        "
+      >
+        <TransferStatus />
+
+        <h3
+          className="
+            mb-4 mt-5
+            max-w-[570px]
+            text-[clamp(1.5rem,2.6vw,2.25rem)]
+            font-bold
+            leading-[1.25]
+            tracking-[-0.035em]
+          "
+          style={{ color: C.text }}
+        >
+          Estamos configurando este canal
+          de donación.
+        </h3>
+
+        <p
+          className="
+            mb-7
+            max-w-[560px]
+            text-[14px]
+            leading-[1.85]
+            sm:text-[15px]
+          "
+          style={{ color: C.textMid }}
+        >
+          Pronto podrás realizar tus donativos
+          directamente por transferencia bancaria.
+          Mientras tanto, escríbenos y con gusto
+          te orientamos sobre cómo apoyar
+          a la Fundación.
+        </p>
+
+        <div>
+          <a
+            href={CONTACT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="
+              inline-flex min-h-12
+              items-center justify-center
+              gap-3
+              rounded-md
+              px-7 py-3
+              text-[14px]
+              font-bold
+              text-white
+              transition-colors
+              duration-200
+              hover:bg-[#A02C3E]
+              focus-visible:outline
+              focus-visible:outline-2
+              focus-visible:outline-offset-4
+            "
+            style={{
+              backgroundColor: C.brand,
+              outlineColor: C.brand,
+            }}
+          >
+            Contáctanos
+
+            <IconArrowRight
+              size={17}
+              stroke={1.8}
+              aria-hidden="true"
+            />
+          </a>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ============================================================
+// TRANSFERENCIA PRÓXIMAMENTE
+// ============================================================
+
 export function TransferenciaProximamente() {
-  const [ref, visible] = useReveal();
+  const reducedMotion = useReducedMotion();
 
   return (
     <section
-      ref={ref}
       id="transferencia"
-      style={{ background: C.bg, padding: "7rem 0" }}
-      className="px-8 sm:px-14 lg:px-20"
+      aria-labelledby="transferencia-title"
+      className="
+        scroll-mt-24
+        overflow-hidden
+        px-5 py-12
+        sm:px-8 sm:py-14
+        lg:px-12 lg:py-16
+        xl:px-16
+        2xl:px-20
+      "
+      style={{
+        backgroundColor: C.bg,
+      }}
     >
-      <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-
-        {/* Header */}
-        <div
-          style={{
-            marginBottom: "3rem",
-            opacity:      visible ? 1 : 0,
-            transform:    visible ? "translateY(0)" : "translateY(20px)",
-            transition:   "opacity .7s ease, transform .7s ease",
+      <div
+        className="
+          mx-auto w-full
+          max-w-[1360px]
+        "
+      >
+        {/* Encabezado */}
+        <motion.div
+          variants={reducedMotion ? undefined : fadeUp}
+          initial={reducedMotion ? false : "hidden"}
+          whileInView="visible"
+          viewport={VIEWPORT}
+          transition={{
+            duration: reducedMotion ? 0 : 0.7,
+            ease: EASE,
           }}
+          className="
+            mb-9
+            lg:mb-11
+          "
         >
-          <SectionLabel>Donación económica</SectionLabel>
-          <h2 style={{
-            fontSize:      "clamp(2rem, 3.5vw, 2.8rem)",
-            fontWeight:    900,
-            letterSpacing: "-0.025em",
-            lineHeight:    1.15,
-            color:         C.text,
-            margin:        0,
-          }}>
+          <SectionLabel>
+            Donación económica
+          </SectionLabel>
+
+          <h2
+            id="transferencia-title"
+            className="
+              max-w-[850px]
+              text-[clamp(2.1rem,3.8vw,3.5rem)]
+              font-extrabold
+              leading-[1.13]
+              tracking-[-0.045em]
+            "
+            style={{ color: C.text }}
+          >
             Dona por{" "}
-            <span style={{ color: C.brand }}>transferencia bancaria</span>
-          </h2>
-          <div style={{ width: 56, height: 3, borderRadius: 99, background: C.brand, marginTop: "1.5rem" }} />
-        </div>
-
-        {/* Tarjeta */}
-        <div
-          style={{
-            borderRadius: "1.5rem",
-            overflow:     "hidden",
-            border:       `1px solid ${C.border}`,
-            opacity:      visible ? 1 : 0,
-            transform:    visible ? "translateY(0)" : "translateY(24px)",
-            transition:   "opacity .7s ease .15s, transform .7s ease .15s",
-          }}
-        >
-          {/* Cabecera oscura */}
-          <div style={{
-            padding:    "1.125rem 1.75rem",
-            background: C.text,
-            display:    "flex",
-            alignItems: "center",
-            gap:        10,
-          }}>
-            <IconBuildingBank size={19} stroke={1.75} style={{ color: C.brand }} />
-            <span style={{ fontWeight: 700, fontSize: "0.875rem", color: "#fff" }}>
-              Datos bancarios
+            <span style={{ color: C.brand }}>
+              transferencia bancaria.
             </span>
-          </div>
+          </h2>
+        </motion.div>
 
-          {/* Cuerpo */}
-          <div style={{
-            background: C.surface,
-            padding:    "4rem 2.5rem",
-            display:    "flex",
-            flexWrap:   "wrap",
-            alignItems: "center",
-            gap:        "2.5rem",
-          }}>
-            {/* Ícono decorativo */}
-            <div style={{
-              width:          88,
-              height:         88,
-              borderRadius:   "1.5rem",
-              background:     C.brandSoft,
-              display:        "flex",
-              alignItems:     "center",
-              justifyContent: "center",
-              flexShrink:     0,
-            }}>
-              <IconCalendarClock size={40} stroke={1.25} style={{ color: C.brand }} />
-            </div>
-
-            <div style={{ flex: 1, minWidth: 240, maxWidth: 520 }}>
-              <div style={{
-                display:       "inline-flex",
-                alignItems:    "center",
-                gap:           6,
-                padding:       "4px 14px",
-                borderRadius:  "999px",
-                background:    C.brandSoft,
-                color:         C.brand,
-                fontSize:      "0.65rem",
-                fontWeight:    800,
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                marginBottom:  "1rem",
-              }}>
-                <IconSparkles size={12} stroke={2} />
-                Próximamente
-              </div>
-
-              <h3 style={{
-                fontSize:      "1.4rem",
-                fontWeight:    900,
-                letterSpacing: "-0.02em",
-                color:         C.text,
-                margin:        "0 0 0.75rem",
-                lineHeight:    1.2,
-              }}>
-                Estamos configurando este canal de donación
-              </h3>
-              <p style={{ fontSize: "0.9rem", lineHeight: 1.7, color: C.textMid, margin: "0 0 1.75rem" }}>
-                Pronto podrás realizar tus donativos directamente por transferencia
-                bancaria. Mientras tanto, escríbenos y con gusto te orientamos sobre
-                cómo apoyar a la Fundación.
-              </p>
-              <a
-                href="https://fmejoremosrealidades.org/#fdeef950-e119-415e-a3a4-6a68bdb8f57b"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display:       "inline-flex",
-                  alignItems:    "center",
-                  gap:           8,
-                  fontWeight:    700,
-                  fontSize:      "0.875rem",
-                  padding:       "0.875rem 1.75rem",
-                  borderRadius:  "999px",
-                  background:    C.brand,
-                  color:         "#fff",
-                  textDecoration:"none",
-                  transition:    "transform 200ms, box-shadow 200ms",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow = "0 8px 24px rgba(200,56,79,0.3)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "none";
-                }}
-              >
-                <IconArrowRight size={16} stroke={2.25} />
-                Contáctanos
-              </a>
-            </div>
-          </div>
-        </div>
+        {/* Información */}
+        <BankInformation />
       </div>
     </section>
   );
 }
 
-/* ─── CTA final ──────────────────────────────────────────────────────────────── */
+// ============================================================
+// CTA FINAL
+// ============================================================
+
 export function CtaBanner() {
-  const [ref, visible] = useReveal();
-  const accent = "#F5A623"; // del token C.accent
+  const reducedMotion = useReducedMotion();
 
   return (
     <section
-      ref={ref}
-      style={{ background: C.brand, padding: "6rem 0" }}
-      className="px-8 sm:px-14 lg:px-20"
+      aria-labelledby="donar-cta-title"
+      className="
+        overflow-hidden
+        px-5 py-14
+        sm:px-8 sm:py-16
+        lg:px-12 lg:py-20
+        xl:px-16
+        2xl:px-20
+      "
+      style={{
+        backgroundColor: C.brand,
+      }}
     >
-      <div
-        style={{
-          maxWidth:   1280,
-          margin:     "0 auto",
-          opacity:    visible ? 1 : 0,
-          transform:  visible ? "translateY(0)" : "translateY(24px)",
-          transition: "opacity .7s ease, transform .7s ease",
+      <motion.div
+        variants={reducedMotion ? undefined : fadeUp}
+        initial={reducedMotion ? false : "hidden"}
+        whileInView="visible"
+        viewport={VIEWPORT}
+        transition={{
+          duration: reducedMotion ? 0 : 0.7,
+          ease: EASE,
         }}
-        className="grid md:grid-cols-2 gap-10 items-center"
+        className="
+          mx-auto grid
+          w-full max-w-[1360px]
+          grid-cols-1
+          items-center
+          gap-9
+          lg:grid-cols-[1.2fr_0.8fr]
+          lg:gap-16
+        "
       >
+        {/* Columna izquierda */}
         <div>
-          <div style={{
-            fontSize:      "0.65rem",
-            fontWeight:    800,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            color:         "rgba(255,255,255,0.6)",
-            marginBottom:  "0.75rem",
-          }}>
+          <p
+            className="
+              mb-5
+              text-[11px]
+              font-bold uppercase
+              tracking-[0.14em]
+              text-white/75
+            "
+          >
             Sé parte del cambio
-          </div>
-          <h2 style={{
-            fontSize:      "clamp(2rem, 5vw, 3rem)",
-            fontWeight:    900,
-            letterSpacing: "-0.025em",
-            lineHeight:    1.15,
-            color:         "#fff",
-            margin:        0,
-          }}>
+          </p>
+
+          <h2
+            id="donar-cta-title"
+            className="
+              max-w-[800px]
+              text-[clamp(2.3rem,4.6vw,4.5rem)]
+              font-extrabold
+              leading-[1.1]
+              tracking-[-0.05em]
+              text-white
+            "
+          >
             Cada acto de generosidad{" "}
-            <span style={{ color: accent }}>transforma una vida</span>
+            <span className="text-white/75">
+              transforma una vida.
+            </span>
           </h2>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }} className="md:items-end">
-          <p style={{
-            fontSize:   "1rem",
-            lineHeight: 1.7,
-            color:      "rgba(255,255,255,0.78)",
-            maxWidth:   380,
-            margin:     0,
-          }}
-            className="md:text-right"
+        {/* Columna derecha */}
+        <div
+          className="
+            flex flex-col
+            items-start
+            gap-7
+            lg:items-end
+          "
+        >
+          <p
+            className="
+              max-w-[470px]
+              text-[15px]
+              leading-[1.85]
+              text-white/85
+              sm:text-[16px]
+              lg:text-right
+            "
           >
-            Tu apoyo nos permite acompañar a más pacientes y familias que necesitan
-            orientación médica, jurídica y emocional.
+            Tu apoyo nos permite acompañar a
+            más pacientes y familias que
+            necesitan orientación médica,
+            jurídica y emocional.
           </p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+
+          {/* Acciones */}
+          <div
+            className="
+              flex flex-wrap
+              gap-3
+              lg:justify-end
+            "
+          >
             <a
               href="#especie"
-              style={{
-                display:       "inline-flex",
-                alignItems:    "center",
-                gap:           8,
-                fontWeight:    700,
-                fontSize:      "0.9rem",
-                padding:       "1rem 2.25rem",
-                borderRadius:  "999px",
-                background:    "#fff",
-                color:         C.brand,
-                textDecoration:"none",
-                transition:    "transform 200ms",
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; }}
+              className="
+                inline-flex min-h-12
+                items-center justify-center
+                rounded-md
+                bg-white
+                px-7 py-3
+                text-[14px]
+                font-bold
+                transition-colors
+                hover:bg-[#F3F4F6]
+                focus-visible:outline
+                focus-visible:outline-2
+                focus-visible:outline-offset-4
+                focus-visible:outline-white
+              "
+              style={{ color: C.brand }}
             >
-              <IconHeart size={17} stroke={2} /> Donar ahora
+              Donar ahora
             </a>
+
             <Link
               to="/servicios"
-              style={{
-                display:       "inline-flex",
-                alignItems:    "center",
-                gap:           8,
-                fontWeight:    600,
-                fontSize:      "0.9rem",
-                padding:       "1rem 2.25rem",
-                borderRadius:  "999px",
-                border:        "2px solid rgba(255,255,255,0.45)",
-                color:         "#fff",
-                textDecoration:"none",
-                transition:    "transform 200ms",
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; }}
+              className="
+                inline-flex min-h-12
+                items-center justify-center
+                rounded-md
+                border border-white/60
+                px-7 py-3
+                text-[14px]
+                font-semibold
+                text-white
+                transition-colors
+                hover:bg-white/10
+                focus-visible:outline
+                focus-visible:outline-2
+                focus-visible:outline-offset-4
+                focus-visible:outline-white
+              "
             >
               Nuestros servicios
             </Link>
           </div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

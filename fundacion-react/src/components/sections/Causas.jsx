@@ -1,495 +1,1038 @@
+
 import { Link } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import {
+  motion,
+  useReducedMotion,
+} from "framer-motion";
+
 import Navbar from "../layout/Navbar";
 import Footer from "../layout/Footer";
-import {
-  IconHeart,
-  IconArrowRight,
-  IconPill,
-  IconScale,
-  IconHeartHandshake,
-  IconUsers,
-  IconChartBar,
-  IconAlertCircle,
-  IconMicroscope,
-  IconClockHeart,
-} from "@tabler/icons-react";
+
+// ============================================================
+// PALETA
+// ============================================================
 
 const C = {
-  brand:     "#C8384F",
+  brand: "#C8384F",
   brandSoft: "#FAE8EB",
-  secondary: "#3B5BA5",
-  secondarySoft: "#EBF0FA",
-  accent:    "#F5A623",
-  bg:        "#F7F8FA",
-  surface:   "#FFFFFF",
-  text:      "#1A2235",
-  textMid:   "#4B5563",
-  textLight: "#9CA3AF",
-  border:    "#E5E7EB",
+  bg: "#F7F8FA",
+  surface: "#FFFFFF",
+  text: "#1A2235",
+  textMid: "#4B5563",
+  border: "#E5E7EB",
 };
 
-function useReveal(threshold = 0.1) {
-  const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } },
-      { threshold }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return [ref, visible];
+// ============================================================
+// ANIMACIONES
+// ============================================================
+
+const EASE = [0.22, 1, 0.36, 1];
+
+const VIEWPORT = {
+  once: true,
+  amount: 0.12,
+};
+
+const fadeUp = {
+  hidden: {
+    opacity: 0,
+    y: 18,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+  },
+};
+
+const stagger = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+function reveal(reducedMotion) {
+  return {
+    initial: reducedMotion ? false : "hidden",
+    whileInView: "visible",
+    viewport: VIEWPORT,
+  };
 }
+
+// ============================================================
+// COMPONENTES COMPARTIDOS
+// ============================================================
 
 function SectionLabel({ children, light = false }) {
   return (
-    <div className="flex items-center gap-3 mb-4">
-      <IconHeart size={15} stroke={2} style={{ color: light ? "rgba(255,255,255,0.6)" : C.brand }} />
-      <span className="text-xs font-bold tracking-widest uppercase"
-        style={{ color: light ? "rgba(255,255,255,0.65)" : C.brand }}>
-        {children}
-      </span>
-    </div>
+    <p
+      className="
+        mb-3 text-[11px]
+        font-bold uppercase
+        tracking-[0.14em]
+      "
+      style={{
+        color: light
+          ? "rgba(255,255,255,0.7)"
+          : C.brand,
+      }}
+    >
+      {children}
+    </p>
   );
 }
 
-// ─── Hero ─────────────────────────────────────────────────────────────────────
+function SectionHeading({
+  children,
+  light = false,
+  id,
+}) {
+  return (
+    <h2
+      id={id}
+      className="
+        text-[clamp(2rem,3.6vw,3.25rem)]
+        font-extrabold
+        leading-[1.12]
+        tracking-[-0.045em]
+      "
+      style={{
+        color: light ? "#FFFFFF" : C.text,
+      }}
+    >
+      {children}
+    </h2>
+  );
+}
+
+// ============================================================
+// HERO
+// ============================================================
+
 function Hero() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { const t = setTimeout(() => setMounted(true), 80); return () => clearTimeout(t); }, []);
-  const rise = (delay = 0) => ({
-    transition: `opacity .9s cubic-bezier(.16,1,.3,1) ${delay}ms, transform .9s cubic-bezier(.16,1,.3,1) ${delay}ms`,
-    opacity: mounted ? 1 : 0,
-    transform: mounted ? "translateY(0)" : "translateY(24px)",
-  });
+  const reducedMotion = useReducedMotion();
 
   return (
-    <section className="relative flex items-end overflow-hidden" style={{ minHeight: "80vh" }}>
-      <style>{`
-        @keyframes slowzoom { from{transform:scale(1)} to{transform:scale(1.06)} }
-        .hero-img { animation: slowzoom 16s ease-in-out infinite alternate; }
-        @media (prefers-reduced-motion: reduce) { .hero-img { animation: none; } }
-      `}</style>
+    <section
+      aria-labelledby="causes-hero-title"
+      className="
+        relative flex
+        min-h-[600px]
+        items-end
+        overflow-hidden
+        sm:min-h-[650px]
+        lg:min-h-[720px]
+      "
+      style={{ backgroundColor: C.text }}
+    >
+      {/* Fotografía principal */}
+      <motion.img
+        src="/home/causa.jpg"
+        alt="Marco Sánchez entregando medicamentos a pacientes"
+        className="
+          absolute inset-0
+          h-full w-full
+          object-cover object-center
+        "
+        initial={
+          reducedMotion
+            ? false
+            : { scale: 1.035 }
+        }
+        animate={{ scale: 1 }}
+        transition={{
+          duration: reducedMotion ? 0 : 1.5,
+          ease: EASE,
+        }}
+      />
 
-      {/* Foto — Marco con pacientes */}
-      <div className="absolute inset-0 overflow-hidden">
-        <img src="/home/causa.jpg" alt="Marco Sánchez entregando medicamentos a pacientes"
-          className="hero-img w-full h-full object-cover object-center" />
-      </div>
-      <div className="absolute inset-0" style={{
-        background: "linear-gradient(to bottom, rgba(10,14,30,0.25) 0%, rgba(10,14,30,0.55) 40%, rgba(10,14,30,0.94) 100%)",
-      }} />
-      <div className="absolute bottom-0 left-0 pointer-events-none" style={{
-        width: "50rem", height: "30rem",
-        background: `radial-gradient(ellipse at 0% 100%, ${C.brand}28 0%, transparent 60%)`,
-      }} />
+      {/* Oscurecimiento */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(10,14,30,0.25) 0%, rgba(10,14,30,0.5) 45%, rgba(10,14,30,0.91) 100%)",
+        }}
+      />
 
-      <div className="relative z-10 w-full px-8 sm:px-14 lg:px-20 pb-24 pt-40">
-        <div className="max-w-7xl">
-          <div style={rise(0)}><SectionLabel light>Nuestra causa</SectionLabel></div>
-          <h1 className="font-black leading-none mb-6"
-            style={{ ...rise(120), fontSize: "clamp(2.8rem, 8vw, 7rem)", color: "#fff", letterSpacing: "-0.03em", maxWidth: 800 }}>
-            La leucemia en{" "}
-            <span style={{ color: C.brand }}>México</span>{" "}
-            no espera
-          </h1>
-          <p className="text-base leading-relaxed max-w-xl mb-10"
-            style={{ ...rise(240), color: "rgba(255,255,255,0.72)" }}>
-            Miles de personas reciben cada año un diagnóstico que cambia su vida y la de
-            su familia. Nosotros estamos aquí para que no enfrenten ese momento solos.
-          </p>
-          <div style={rise(340)}>
-            <Link to="/donar"
-              className="inline-flex items-center gap-2 font-bold text-sm px-8 py-4 rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
-              style={{ background: C.brand, color: "#fff" }}>
-              <IconHeart size={16} stroke={2} /> Apoya la causa
+      {/* Contenido */}
+      <div
+        className="
+          relative z-10
+          mx-auto w-full
+          max-w-[1360px]
+          px-5 pb-14 pt-32
+          sm:px-8 sm:pb-16
+          lg:px-12 lg:pb-20
+          xl:px-16
+          2xl:px-20
+        "
+      >
+        <motion.div
+          variants={
+            reducedMotion ? undefined : stagger
+          }
+          initial={reducedMotion ? false : "hidden"}
+          animate="visible"
+          className="max-w-[850px]"
+        >
+          <motion.div variants={fadeUp}>
+            <SectionLabel light>
+              Nuestra causa
+            </SectionLabel>
+          </motion.div>
+
+          <motion.h1
+            id="causes-hero-title"
+            variants={fadeUp}
+            className="
+              mb-5
+              text-[clamp(2.8rem,6.4vw,5.8rem)]
+              font-extrabold
+              leading-[1.03]
+              tracking-[-0.055em]
+              text-white
+            "
+          >
+            La leucemia en México{" "}
+            <span className="text-[#F08B9A]">
+              no espera.
+            </span>
+          </motion.h1>
+
+          <motion.p
+            variants={fadeUp}
+            className="
+              mb-7 max-w-[620px]
+              text-[15px]
+              leading-[1.8]
+              text-white/85
+              sm:text-[17px]
+            "
+          >
+            Miles de personas reciben cada año
+            un diagnóstico que cambia su vida
+            y la de su familia. Nosotros estamos
+            aquí para que no enfrenten ese momento
+            solos.
+          </motion.p>
+
+          <motion.div variants={fadeUp}>
+            <Link
+              to="/donar"
+              className="
+                inline-flex min-h-12
+                items-center justify-center
+                rounded-md px-7
+                text-[14px] font-bold
+                text-white
+                transition-colors
+                hover:bg-[#A92D42]
+              "
+              style={{
+                backgroundColor: C.brand,
+              }}
+            >
+              Apoya la causa
             </Link>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
 }
 
-// ─── Datos duros sobre leucemia en México ─────────────────────────────────────
+// ============================================================
+// DATOS SOBRE LEUCEMIA
+// ============================================================
+
+// IMPORTANTE:
+// Estas cifras y sus fuentes proceden del código original.
+// Deben verificarse contra publicaciones oficiales antes
+// de mostrarse como datos confirmados en producción.
+
 const STATS = [
   {
-    num:   "~6,000",
+    num: "~6,000",
     label: "nuevos casos al año",
-    note:  "INEGI / Globocan 2022",
+    note: "INEGI / GLOBOCAN 2022",
   },
   {
-    num:   "2°",
+    num: "2°",
     label: "cáncer más frecuente en menores de 15 años",
-    note:  "IMSS / Secretaría de Salud",
+    note: "IMSS / Secretaría de Salud",
   },
   {
-    num:   "50%",
+    num: "50%",
     label: "de pacientes pediátricos no completa tratamiento",
-    note:  "Journal of Global Oncology",
+    note: "Journal of Global Oncology",
   },
   {
-    num:   "30%",
+    num: "30%",
     label: "de casos sin diagnóstico oportuno en zonas rurales",
-    note:  "CONACYT / INSP",
+    note: "CONACYT / INSP",
   },
 ];
 
 function DataSection() {
-  const [ref, visible] = useReveal();
-  return (
-    <section ref={ref} className="py-24 px-8 sm:px-14 lg:px-20" style={{ background: C.text }}>
-      <div className="max-w-7xl">
-        <div className={`mb-14 transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
-          <SectionLabel light>El contexto</SectionLabel>
-          <h2 className="font-black leading-tight max-w-2xl"
-            style={{ fontSize: "clamp(2rem, 4vw, 3rem)", color: "#fff", letterSpacing: "-0.025em" }}>
-            Lo que enfrentan los pacientes{" "}
-            <span style={{ color: C.brand }}>en números reales</span>
-          </h2>
-        </div>
+  const reducedMotion = useReducedMotion();
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {STATS.map(({ num, label, note }, i) => (
-            <div
+  return (
+    <section
+      aria-labelledby="causes-data-title"
+      className="
+        px-5 py-12
+        sm:px-8 sm:py-14
+        lg:px-12 lg:py-16
+        xl:px-16
+        2xl:px-20
+      "
+      style={{ backgroundColor: C.text }}
+    >
+      <div className="mx-auto max-w-[1360px]">
+        <motion.div
+          variants={fadeUp}
+          {...reveal(reducedMotion)}
+          className="mb-9 max-w-[780px]"
+        >
+          <SectionLabel light>
+            El contexto
+          </SectionLabel>
+
+          <SectionHeading
+            id="causes-data-title"
+            light
+          >
+            Lo que enfrentan los pacientes{" "}
+            <span className="text-[#F08B9A]">
+              en cifras.
+            </span>
+          </SectionHeading>
+        </motion.div>
+
+        <motion.div
+          variants={
+            reducedMotion ? undefined : stagger
+          }
+          {...reveal(reducedMotion)}
+          className="
+            grid grid-cols-1
+            border-t border-white/20
+            sm:grid-cols-2
+            lg:grid-cols-4
+          "
+        >
+          {STATS.map(({ num, label, note }) => (
+            <motion.div
               key={label}
-              className={`rounded-3xl p-8 transition-all duration-700 ${
-                visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-              }`}
-              style={{
-                transitionDelay: `${i * 100}ms`,
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.1)",
-              }}
+              variants={fadeUp}
+              className="
+                border-b border-white/20
+                py-6
+                sm:px-5
+                lg:border-b-0
+                lg:border-r
+                lg:last:border-r-0
+                lg:px-6
+              "
             >
-              <div className="font-black mb-2"
-                style={{ fontSize: "clamp(2.2rem, 4vw, 3.2rem)", color: C.brand, lineHeight: 1, letterSpacing: "-0.04em" }}>
+              <p
+                className="
+                  mb-3
+                  text-[clamp(2.4rem,4vw,3.6rem)]
+                  font-extrabold
+                  leading-none
+                  tracking-[-0.05em]
+                "
+                style={{ color: "#F08B9A" }}
+              >
                 {num}
-              </div>
-              <div className="text-sm font-semibold leading-snug mb-4" style={{ color: "#fff" }}>{label}</div>
-              <div className="text-[11px] font-medium tracking-wide pt-4"
-                style={{ color: "rgba(255,255,255,0.35)", borderTop: "1px solid rgba(255,255,255,0.1)" }}>
-                Fuente: {note}
-              </div>
-            </div>
+              </p>
+
+              <p
+                className="
+                  mb-5 max-w-[230px]
+                  text-[14px]
+                  font-semibold
+                  leading-[1.55]
+                  text-white
+                "
+              >
+                {label}
+              </p>
+
+              <p
+                className="
+                  text-[11px]
+                  leading-[1.6]
+                  text-white/50
+                "
+              >
+                Fuente indicada: {note}
+              </p>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
 }
 
-// ─── Cómo ayudamos ────────────────────────────────────────────────────────────
+// ============================================================
+// CÓMO AYUDAMOS
+// ============================================================
+
 const HOW = [
   {
-    icon:  IconPill,
+    number: "01",
     title: "Gestión de medicamentos",
-    body:  "Facilitamos el acceso a medicamentos especializados mediante convenios, gestiones ante instituciones de salud y orientación directa al paciente.",
-    color: C.brand,
-    soft:  C.brandSoft,
+    body:
+      "Facilitamos el acceso a medicamentos especializados mediante convenios, gestiones ante instituciones de salud y orientación directa al paciente.",
   },
   {
-    icon:  IconScale,
+    number: "02",
     title: "Defensa de derechos",
-    body:  "Acompañamos a pacientes que han visto vulnerado su derecho a la salud: demoras, negativas de cobertura o falta de acceso a tratamiento.",
-    color: C.secondary,
-    soft:  C.secondarySoft,
+    body:
+      "Acompañamos a pacientes que han visto vulnerado su derecho a la salud: demoras, negativas de cobertura o falta de acceso a tratamiento.",
   },
   {
-    icon:  IconHeartHandshake,
+    number: "03",
     title: "Apoyo emocional",
-    body:  "A través del programa Tejiendo Esperanza, creamos redes de contención entre pacientes y familias, con apoyo psicológico profesional.",
-    color: C.brand,
-    soft:  C.brandSoft,
+    body:
+      "A través del programa Tejiendo Esperanza, creamos redes de contención entre pacientes y familias, con apoyo psicológico profesional.",
   },
   {
-    icon:  IconMicroscope,
+    number: "04",
     title: "Información y detección",
-    body:  "Promovemos la detección temprana y difundimos información confiable sobre tipos de leucemia, síntomas y opciones de tratamiento.",
-    color: C.secondary,
-    soft:  C.secondarySoft,
+    body:
+      "Promovemos la detección temprana y difundimos información confiable sobre tipos de leucemia, síntomas y opciones de tratamiento.",
   },
   {
-    icon:  IconUsers,
+    number: "05",
     title: "Comunidad y red",
-    body:  "Conectamos a pacientes con otros pacientes, especialistas y organizaciones aliadas que forman una red de apoyo sólida y humana.",
-    color: C.brand,
-    soft:  C.brandSoft,
+    body:
+      "Conectamos a pacientes con otros pacientes, especialistas y organizaciones aliadas que forman una red de apoyo sólida y humana.",
   },
   {
-    icon:  IconClockHeart,
+    number: "06",
     title: "Acompañamiento continuo",
-    body:  "Nuestro equipo está presente desde el diagnóstico hasta el seguimiento post-tratamiento, sin dejar a nadie sin respuesta.",
-    color: C.secondary,
-    soft:  C.secondarySoft,
+    body:
+      "Nuestro equipo está presente desde el diagnóstico hasta el seguimiento post-tratamiento, sin dejar a nadie sin respuesta.",
   },
 ];
 
 function HowWeHelp() {
-  const [ref, visible] = useReveal();
-  return (
-    <section ref={ref} style={{ background: C.bg }} className="py-28 px-8 sm:px-14 lg:px-20">
-      <div className="max-w-7xl">
-        <div className={`mb-16 transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
-          <SectionLabel>Cómo ayudamos</SectionLabel>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <h2 className="font-black leading-tight"
-              style={{ fontSize: "clamp(2rem, 4vw, 3rem)", color: C.text, letterSpacing: "-0.025em" }}>
-              Acompañamiento{" "}
-              <span style={{ color: C.brand }}>en todas las dimensiones</span>
-            </h2>
-            <p className="text-sm leading-relaxed max-w-xs" style={{ color: C.textMid }}>
-              La leucemia no solo afecta la salud física. Por eso nuestro apoyo es médico,
-              jurídico y emocional.
-            </p>
-          </div>
-          <div className="w-16 h-1 rounded-full mt-6" style={{ background: C.brand }} />
-        </div>
+  const reducedMotion = useReducedMotion();
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {HOW.map(({ icon: Icon, title, body, color, soft }, i) => (
-            <div
-              key={title}
-              className={`group rounded-3xl p-8 border transition-all duration-500 hover:shadow-lg hover:-translate-y-1 ${
-                visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-              }`}
-              style={{ transitionDelay: `${i * 90}ms`, background: C.surface, borderColor: C.border }}
+  return (
+    <section
+      aria-labelledby="causes-help-title"
+      className="
+        px-5 py-12
+        sm:px-8 sm:py-14
+        lg:px-12 lg:py-16
+        xl:px-16
+        2xl:px-20
+      "
+      style={{ backgroundColor: C.surface }}
+    >
+      <div className="mx-auto max-w-[1360px]">
+        <motion.div
+          variants={fadeUp}
+          {...reveal(reducedMotion)}
+          className="
+            mb-9 grid
+            grid-cols-1
+            gap-4
+            md:grid-cols-[1.2fr_0.8fr]
+            md:items-end
+            md:gap-10
+          "
+        >
+          <div>
+            <SectionLabel>
+              Cómo ayudamos
+            </SectionLabel>
+
+            <SectionHeading id="causes-help-title">
+              Acompañamiento{" "}
+              <span style={{ color: C.brand }}>
+                en todas las dimensiones.
+              </span>
+            </SectionHeading>
+          </div>
+
+          <p
+            className="
+              max-w-[400px]
+              text-[14px]
+              leading-[1.8]
+              sm:text-[15px]
+            "
+            style={{ color: C.textMid }}
+          >
+            La leucemia no solo afecta la salud
+            física. Por eso nuestro apoyo es
+            médico, jurídico y emocional.
+          </p>
+        </motion.div>
+
+        <motion.div
+          variants={
+            reducedMotion ? undefined : stagger
+          }
+          {...reveal(reducedMotion)}
+          className="
+            grid grid-cols-1
+            gap-x-9 gap-y-8
+            sm:grid-cols-2
+            lg:grid-cols-3
+            lg:gap-x-12
+            lg:gap-y-10
+          "
+        >
+          {HOW.map(({ number, title, body }) => (
+            <motion.article
+              key={number}
+              variants={fadeUp}
+              className="border-t-2 pt-5"
+              style={{ borderColor: C.brand }}
             >
-              <div className="inline-flex items-center justify-center rounded-2xl mb-5 transition-transform duration-300 group-hover:scale-110"
-                style={{ width: 52, height: 52, background: soft, color }}>
-                <Icon size={24} stroke={1.75} />
-              </div>
-              <h3 className="font-bold text-lg mb-3" style={{ color: C.text }}>{title}</h3>
-              <p className="text-sm leading-relaxed" style={{ color: C.textMid }}>{body}</p>
-            </div>
+              <span
+                className="
+                  mb-5 block
+                  text-[12px]
+                  font-bold
+                  tracking-[0.1em]
+                "
+                style={{ color: C.brand }}
+              >
+                {number}
+              </span>
+
+              <h3
+                className="
+                  mb-3 text-[20px]
+                  font-bold
+                  leading-[1.3]
+                  tracking-[-0.025em]
+                "
+                style={{ color: C.text }}
+              >
+                {title}
+              </h3>
+
+              <p
+                className="
+                  text-[14px]
+                  leading-[1.8]
+                  sm:text-[15px]
+                "
+                style={{ color: C.textMid }}
+              >
+                {body}
+              </p>
+            </motion.article>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
 }
 
-// ─── Foto + quote — impacto real ──────────────────────────────────────────────
+// ============================================================
+// IMPACTO REAL
+// ============================================================
+
 function ImpactQuote() {
-  const [ref, visible] = useReveal();
+  const reducedMotion = useReducedMotion();
+
   return (
-    <section ref={ref} style={{ background: C.surface }} className="py-28 px-8 sm:px-14 lg:px-20">
-      <div className="max-w-7xl grid md:grid-cols-2 gap-16 items-center">
-
-        {/* Foto */}
-        <div className={`relative group rounded-3xl overflow-hidden shadow-lg transition-all duration-1000 ${
-          visible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-10"
-        }`} style={{ height: 460 }}>
-          <img src="/home/dona2.JPG"
+    <section
+      aria-labelledby="causes-impact-title"
+      className="
+        px-5 py-12
+        sm:px-8 sm:py-14
+        lg:px-12 lg:py-16
+        xl:px-16
+        2xl:px-20
+      "
+      style={{ backgroundColor: C.bg }}
+    >
+      <motion.div
+        variants={
+          reducedMotion ? undefined : stagger
+        }
+        {...reveal(reducedMotion)}
+        className="
+          mx-auto grid
+          max-w-[1360px]
+          grid-cols-1
+          items-center
+          gap-8
+          md:grid-cols-2
+          md:gap-10
+          lg:gap-14
+        "
+      >
+        {/* Fotografía */}
+        <motion.div
+          variants={fadeUp}
+          className="
+            group overflow-hidden
+            rounded-lg
+            h-[330px]
+            sm:h-[420px]
+            md:h-[500px]
+            lg:h-[550px]
+          "
+          style={{ backgroundColor: C.border }}
+        >
+          <motion.img
+            src="/home/dona2.JPG"
             alt="Marco Sánchez entregando medicamentos"
-            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" />
-          <div className="absolute inset-0"
-            style={{ background: "linear-gradient(to top, rgba(10,14,30,0.7) 0%, transparent 55%)" }} />
-          {/* Pie de foto */}
-          <div className="absolute bottom-6 left-6 right-6">
-            <div className="text-xs font-bold tracking-widest uppercase mb-1"
-              style={{ color: C.brand }}>En acción</div>
-            
-          </div>
-        </div>
+            loading="lazy"
+            decoding="async"
+            className="
+              h-full w-full
+              object-cover object-center
+            "
+            whileHover={
+              reducedMotion
+                ? undefined
+                : {
+                    scale: 1.035,
+                    transition: {
+                      duration: 0.7,
+                      ease: EASE,
+                    },
+                  }
+            }
+          />
+        </motion.div>
 
-        {/* Texto */}
-        <div className={`transition-all duration-1000 delay-150 ${
-          visible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10"
-        }`}>
-          <SectionLabel>Lo que hacemos hoy</SectionLabel>
-          <h2 className="font-black leading-tight mb-6"
-            style={{ fontSize: "clamp(1.9rem, 3.5vw, 2.8rem)", color: C.text, letterSpacing: "-0.025em" }}>
+        {/* Contenido */}
+        <motion.div
+          variants={fadeUp}
+          className="min-w-0"
+        >
+          <SectionLabel>
+            Lo que hacemos hoy
+          </SectionLabel>
+
+          <SectionHeading id="causes-impact-title">
             Acción concreta,{" "}
-            <span style={{ color: C.brand }}>impacto real</span>
-          </h2>
-          <p className="leading-relaxed mb-5 text-base" style={{ color: C.textMid }}>
-            Desde nuestros inicios hemos gestionado medicamentos especializados, brindado
-            asesoría jurídica para pacientes con cobertura negada y acompañado emocionalmente
-            a familias en momentos de alta incertidumbre.
-          </p>
-          <p className="leading-relaxed mb-8 text-base" style={{ color: C.textMid }}>
-            Aunque aún estamos construyendo nuestra base de casos documentados, cada
-            acción que emprendemos es un paso firme hacia una red de apoyo más sólida
-            para quienes más lo necesitan.
+            <span style={{ color: C.brand }}>
+              impacto real.
+            </span>
+          </SectionHeading>
+
+          <p
+            className="
+              mt-5 text-[14px]
+              leading-[1.85]
+              sm:text-[15px]
+            "
+            style={{ color: C.textMid }}
+          >
+            Desde nuestros inicios hemos gestionado
+            medicamentos especializados, brindado
+            asesoría jurídica para pacientes con
+            cobertura negada y acompañado
+            emocionalmente a familias en momentos
+            de alta incertidumbre.
           </p>
 
-          {/* Quote */}
-          <blockquote className="pl-6 mb-8" style={{ borderLeft: `3px solid ${C.brand}` }}>
-            <p className="text-base font-semibold italic leading-relaxed" style={{ color: C.text }}>
-              "Cuando un paciente recibe su medicamento a tiempo, cuando una familia
-              encuentra respuesta a su duda legal, cuando alguien siente que no está solo:
-              eso es Mejoremos Realidades."
+          <p
+            className="
+              mt-4 text-[14px]
+              leading-[1.85]
+              sm:text-[15px]
+            "
+            style={{ color: C.textMid }}
+          >
+            Aunque aún estamos construyendo nuestra
+            base de casos documentados, cada acción
+            que emprendemos es un paso firme hacia
+            una red de apoyo más sólida para quienes
+            más lo necesitan.
+          </p>
+
+          <blockquote
+            className="
+              mt-6 border-l-2
+              pl-5
+            "
+            style={{ borderColor: C.brand }}
+          >
+            <p
+              className="
+                text-[15px]
+                font-medium italic
+                leading-[1.8]
+              "
+              style={{ color: C.text }}
+            >
+              “Cuando un paciente recibe su medicamento
+              a tiempo, cuando una familia encuentra
+              respuesta a su duda legal, cuando alguien
+              siente que no está solo: eso es
+              Mejoremos Realidades.”
             </p>
-            <footer className="mt-3 text-xs font-bold tracking-widest uppercase" style={{ color: C.brand }}>
+
+            <footer
+              className="
+                mt-3 text-[12px]
+                font-semibold
+              "
+              style={{ color: C.brand }}
+            >
               Marco Sánchez · Presidente
             </footer>
           </blockquote>
 
-          <Link to="/servicios"
-            className="inline-flex items-center gap-2 font-bold text-sm px-8 py-4 rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
-            style={{ background: C.brand, color: "#fff" }}>
-            Ver nuestros servicios <IconArrowRight size={16} stroke={2.25} />
+          <Link
+            to="/servicios"
+            className="
+              mt-7 inline-flex
+              min-h-11
+              items-center justify-center
+              rounded-md
+              px-6
+              text-[13px]
+              font-bold
+              text-white
+              transition-colors
+              hover:bg-[#A92D42]
+            "
+            style={{ backgroundColor: C.brand }}
+          >
+            Ver nuestros servicios
           </Link>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }
 
-// ─── Próximas causas — placeholder abierto ────────────────────────────────────
+// ============================================================
+// PRÓXIMAS CAUSAS
+// ============================================================
+
 function ComingCauses() {
-  const [ref, visible] = useReveal();
+  const reducedMotion = useReducedMotion();
+
   return (
-    <section ref={ref} style={{ background: C.bg }} className="py-28 px-8 sm:px-14 lg:px-20">
-      <div className="max-w-7xl">
-        <div className={`mb-14 transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
-          <SectionLabel>Causas activas</SectionLabel>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <h2 className="font-black leading-tight"
-              style={{ fontSize: "clamp(2rem, 4vw, 3rem)", color: C.text, letterSpacing: "-0.025em" }}>
-              Pronto podrás apoyar{" "}
-              <span style={{ color: C.brand }}>casos específicos</span>
-            </h2>
-            <p className="text-sm leading-relaxed max-w-xs" style={{ color: C.textMid }}>
-              Estamos preparando el espacio para presentar casos reales de pacientes
-              que necesitan tu apoyo directo.
-            </p>
-          </div>
-        </div>
+    <section
+      aria-labelledby="coming-causes-title"
+      className="
+        px-5 py-12
+        sm:px-8 sm:py-14
+        lg:px-12 lg:py-16
+        xl:px-16
+        2xl:px-20
+      "
+      style={{ backgroundColor: C.surface }}
+    >
+      <motion.div
+        variants={
+          reducedMotion ? undefined : stagger
+        }
+        {...reveal(reducedMotion)}
+        className="
+          mx-auto grid
+          max-w-[1360px]
+          grid-cols-1
+          items-center
+          gap-8
+          md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]
+          md:gap-12
+        "
+      >
+        {/* Introducción */}
+        <motion.div variants={fadeUp}>
+          <SectionLabel>
+            Causas activas
+          </SectionLabel>
 
-        {/* Cards placeholder */}
-        <div className="grid md:grid-cols-3 gap-6">
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className={`rounded-3xl overflow-hidden border transition-all duration-500 ${
-                visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-              }`}
-              style={{
-                transitionDelay: `${i * 100}ms`,
-                borderColor: C.border,
-                background: C.surface,
-              }}
-            >
-              {/* Imagen placeholder */}
-              <div className="h-52 flex items-center justify-center"
-                style={{ background: C.brandSoft }}>
-                <div className="flex flex-col items-center gap-3">
-                  <div className="flex items-center justify-center rounded-full"
-                    style={{ width: 60, height: 60, background: "rgba(200,56,79,0.15)", color: C.brand }}>
-                    <IconAlertCircle size={28} stroke={1.5} />
-                  </div>
-                  <span className="text-xs font-bold tracking-widest uppercase"
-                    style={{ color: C.brand }}>Próximamente</span>
-                </div>
-              </div>
-              {/* Contenido */}
-              <div className="p-7">
-                {/* Barra de progreso vacía */}
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold" style={{ color: C.textLight }}>Meta de recaudación</span>
-                  <span className="text-xs font-bold" style={{ color: C.brand }}>— %</span>
-                </div>
-                <div className="w-full h-1.5 rounded-full mb-5" style={{ background: C.border }}>
-                  <div className="h-full rounded-full" style={{ width: "0%", background: C.brand }} />
-                </div>
-                {/* Texto */}
-                <div className="h-4 rounded-full mb-2" style={{ background: C.border, width: "75%" }} />
-                <div className="h-4 rounded-full mb-2" style={{ background: C.border, width: "55%" }} />
-                <div className="h-4 rounded-full mb-5" style={{ background: C.border, width: "65%" }} />
-                <div className="inline-flex items-center gap-2 text-xs font-bold px-5 py-2.5 rounded-full"
-                  style={{ background: C.brandSoft, color: C.brand }}>
-                  Caso en preparación
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+          <SectionHeading id="coming-causes-title">
+            Pronto podrás apoyar{" "}
+            <span style={{ color: C.brand }}>
+              casos específicos.
+            </span>
+          </SectionHeading>
 
-        {/* CTA para notificaciones */}
-        <div className={`mt-16 rounded-3xl p-10 flex flex-col md:flex-row items-center justify-between gap-8 transition-all duration-700 delay-300 ${
-          visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-        }`}
-          style={{ background: C.text }}>
-          <div>
-            <div className="text-xs font-bold tracking-widest uppercase mb-2"
-              style={{ color: C.brand }}>Mantente al tanto</div>
-            <h3 className="font-black text-2xl" style={{ color: "#fff", letterSpacing: "-0.02em" }}>
-              ¿Quieres saber cuándo{" "}
-              <span style={{ color: C.brand }}>haya casos activos</span>?
-            </h3>
-            <p className="mt-2 text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>
-              Contáctanos y te avisamos cuando el primer caso esté disponible para apoyar.
-            </p>
-          </div>
-          <a href="https://fmejoremosrealidades.org/#fdeef950-e119-415e-a3a4-6a68bdb8f57b"
-            target="_blank" rel="noopener noreferrer"
-            className="shrink-0 inline-flex items-center gap-2 font-bold text-sm px-8 py-4 rounded-full transition-all duration-200 hover:-translate-y-0.5"
-            style={{ background: C.brand, color: "#fff", whiteSpace: "nowrap" }}>
-            Notifícame <IconArrowRight size={16} stroke={2.25} />
+          <p
+            className="
+              mt-5 max-w-[650px]
+              text-[14px]
+              leading-[1.85]
+              sm:text-[15px]
+            "
+            style={{ color: C.textMid }}
+          >
+            Estamos preparando el espacio para
+            presentar casos reales de pacientes
+            que necesitan tu apoyo directo.
+          </p>
+
+          <p
+            className="
+              mt-4 max-w-[650px]
+              text-[14px]
+              leading-[1.85]
+              sm:text-[15px]
+            "
+            style={{ color: C.textMid }}
+          >
+            Cada caso contará con información
+            sobre la necesidad que buscamos
+            atender y el objetivo de recaudación.
+            Por ahora, puedes seguir apoyando
+            nuestra labor general.
+          </p>
+
+          <Link
+            to="/donar"
+            className="
+              mt-6 inline-flex
+              min-h-11
+              items-center justify-center
+              rounded-md
+              px-6
+              text-[13px]
+              font-bold
+              text-white
+              transition-colors
+              hover:bg-[#A92D42]
+            "
+            style={{ backgroundColor: C.brand }}
+          >
+            Apoyar a la fundación
+          </Link>
+        </motion.div>
+
+        {/* Información de disponibilidad */}
+        <motion.div
+          variants={fadeUp}
+          className="
+            border-t-2
+            pt-6
+          "
+          style={{ borderColor: C.brand }}
+        >
+          <p
+            className="
+              mb-3 text-[12px]
+              font-bold uppercase
+              tracking-[0.1em]
+            "
+            style={{ color: C.brand }}
+          >
+            Próximamente
+          </p>
+
+          <h3
+            className="
+              mb-4
+              text-[clamp(1.5rem,2.5vw,2.2rem)]
+              font-bold
+              leading-[1.2]
+              tracking-[-0.035em]
+            "
+            style={{ color: C.text }}
+          >
+            Campañas individuales
+            de apoyo a pacientes.
+          </h3>
+
+          <p
+            className="
+              mb-6 text-[14px]
+              leading-[1.85]
+              sm:text-[15px]
+            "
+            style={{ color: C.textMid }}
+          >
+            Todavía no hay casos individuales
+            publicados en esta sección. Cuando
+            estén disponibles, podrás conocer
+            sus necesidades y las formas de
+            contribuir.
+          </p>
+
+          <a
+            href="https://fmejoremosrealidades.org/#fdeef950-e119-415e-a3a4-6a68bdb8f57b"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="
+              inline-flex
+              border-b pb-1
+              text-[13px]
+              font-bold
+              transition-colors
+              hover:text-[#A92D42]
+            "
+            style={{
+              color: C.brand,
+              borderColor: C.brand,
+            }}
+          >
+            Contactarnos para recibir información
           </a>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }
 
-// ─── CTA final ────────────────────────────────────────────────────────────────
+// ============================================================
+// CTA FINAL
+// ============================================================
+
 function CtaBanner() {
-  const [ref, visible] = useReveal();
+  const reducedMotion = useReducedMotion();
+
   return (
-    <section ref={ref} className="py-24 px-8 sm:px-14 lg:px-20" style={{ background: C.brand }}>
-      <div className={`max-w-7xl grid md:grid-cols-2 gap-10 items-center transition-all duration-700 ${
-        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      }`}>
+    <section
+      aria-labelledby="causes-cta-title"
+      className="
+        px-5 py-12
+        sm:px-8 sm:py-14
+        lg:px-12 lg:py-16
+        xl:px-16
+        2xl:px-20
+      "
+      style={{ backgroundColor: C.brand }}
+    >
+      <motion.div
+        variants={
+          reducedMotion ? undefined : stagger
+        }
+        {...reveal(reducedMotion)}
+        className="
+          mx-auto grid
+          max-w-[1360px]
+          grid-cols-1
+          items-center
+          gap-7
+          md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]
+          md:gap-10
+        "
+      >
         <div>
-          <div className="text-xs font-bold tracking-widest uppercase mb-3"
-            style={{ color: "rgba(255,255,255,0.6)" }}>Actúa hoy</div>
-          <h2 className="font-black leading-tight"
-            style={{ fontSize: "clamp(2rem, 5vw, 3rem)", color: "#fff", letterSpacing: "-0.025em" }}>
+          <motion.div variants={fadeUp}>
+            <SectionLabel light>
+              Actúa hoy
+            </SectionLabel>
+          </motion.div>
+
+          <motion.h2
+            id="causes-cta-title"
+            variants={fadeUp}
+            className="
+              text-[clamp(2rem,4vw,3.5rem)]
+              font-extrabold
+              leading-[1.12]
+              tracking-[-0.045em]
+              text-white
+            "
+          >
             Tu donativo puede{" "}
-            <span style={{ color: C.accent }}>cambiar una vida</span>
-          </h2>
+            <span className="text-white/75">
+              cambiar una vida.
+            </span>
+          </motion.h2>
         </div>
-        <div className="flex flex-col gap-4 md:items-end">
-          <p className="text-base leading-relaxed md:text-right max-w-sm"
-            style={{ color: "rgba(255,255,255,0.78)" }}>
-            Mientras preparamos los casos individuales, tu apoyo general nos permite
-            seguir operando y llegando a más pacientes hoy.
-          </p>
-          <div className="flex flex-wrap gap-4">
-            <Link to="/donar"
-              className="inline-flex items-center gap-2 font-bold text-sm px-9 py-4 rounded-full transition-all duration-200 hover:-translate-y-0.5"
-              style={{ background: "#fff", color: C.brand }}>
-              <IconHeart size={18} stroke={2} /> Donar ahora
+
+        <div className="md:justify-self-end">
+          <motion.p
+            variants={fadeUp}
+            className="
+              mb-5 max-w-[410px]
+              text-[14px]
+              leading-[1.8]
+              text-white/85
+              sm:text-[15px]
+              md:text-right
+            "
+          >
+            Mientras preparamos los casos
+            individuales, tu apoyo general nos
+            permite seguir operando y llegando
+            a más pacientes hoy.
+          </motion.p>
+
+          <motion.div
+            variants={fadeUp}
+            className="
+              flex flex-wrap gap-3
+              md:justify-end
+            "
+          >
+            <Link
+              to="/donar"
+              className="
+                inline-flex min-h-12
+                items-center justify-center
+                rounded-md bg-white
+                px-7 text-[14px]
+                font-bold
+                transition-colors
+                hover:bg-[#F5F5F5]
+              "
+              style={{ color: C.brand }}
+            >
+              Donar ahora
             </Link>
-            <Link to="/servicios"
-              className="inline-flex items-center gap-2 font-semibold text-sm px-9 py-4 rounded-full border-2 transition-all duration-200 hover:-translate-y-0.5"
-              style={{ borderColor: "rgba(255,255,255,0.45)", color: "#fff" }}>
+
+            <Link
+              to="/servicios"
+              className="
+                inline-flex min-h-12
+                items-center justify-center
+                rounded-md
+                border border-white/60
+                px-7 text-[14px]
+                font-semibold
+                text-white
+                transition-colors
+                hover:bg-white/10
+              "
+            >
               Nuestros servicios
             </Link>
-          </div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }
+
+// ============================================================
+// PÁGINA PRINCIPAL
+// ============================================================
 
 export default function Causas() {
   return (
-    <div className="min-h-screen font-sans" style={{ background: C.bg }}>
+    <div
+      className="min-h-screen font-sans"
+      style={{ backgroundColor: C.bg }}
+    >
       <Navbar />
-      <Hero />
-      <DataSection />
-      <HowWeHelp />
-      <ImpactQuote />
-      <ComingCauses />
-      <CtaBanner />
+
+      <main>
+        <Hero />
+        <DataSection />
+        <HowWeHelp />
+        <ImpactQuote />
+        <ComingCauses />
+        <CtaBanner />
+      </main>
+
       <Footer />
     </div>
   );

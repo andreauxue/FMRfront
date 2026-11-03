@@ -1,275 +1,409 @@
-// src/public/pages/donar/DonarHero.jsx
-import { useEffect, useState } from "react";
+
 import {
-  IconGift,
-  IconHeart,
-  IconPill,
-  IconUsers,
-} from "@tabler/icons-react";
+  motion,
+  useReducedMotion,
+} from "framer-motion";
+
 import { C } from "./tokens";
 import SectionLabel from "./SectionLabel";
 
+// ============================================================
+// DATOS
+// ============================================================
+
 const PILLARS = [
   {
-    icon: IconPill,
+    number: "01",
     title: "Medicamentos",
-    body: "Adquirimos y entregamos medicamentos especializados a pacientes inscritos.",
+    body:
+      "Adquirimos y entregamos medicamentos especializados a pacientes inscritos.",
   },
   {
-    icon: IconUsers,
+    number: "02",
     title: "Acompañamiento",
-    body: "Financiamos programas médicos, psicológicos y jurídicos sin costo para el paciente.",
+    body:
+      "Financiamos programas médicos, psicológicos y jurídicos sin costo para el paciente.",
   },
   {
-    icon: IconHeart,
+    number: "03",
     title: "Transparencia",
-    body: "Cada contribución se administra con responsabilidad y rendición de cuentas.",
+    body:
+      "Cada contribución se administra con responsabilidad y rendición de cuentas.",
   },
 ];
 
-export default function DonarHero() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setMounted(true), 80);
-    return () => clearTimeout(t);
-  }, []);
+// ============================================================
+// ANIMACIONES
+// ============================================================
 
-  const rise = (delay = 0) => ({
-    transition: `opacity .9s cubic-bezier(.16,1,.3,1) ${delay}ms, transform .9s cubic-bezier(.16,1,.3,1) ${delay}ms`,
-    opacity:   mounted ? 1 : 0,
-    transform: mounted ? "translateY(0)" : "translateY(20px)",
-  });
+const EASE = [0.22, 1, 0.36, 1];
+
+const fadeUp = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+  },
+};
+
+const stagger = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+// ============================================================
+// BOTONES
+// ============================================================
+
+function HeroActions() {
+  return (
+    <div className="flex flex-wrap gap-3">
+      <a
+        href="#especie"
+        className="
+          inline-flex min-h-12
+          items-center justify-center
+          rounded-md px-7
+          text-[14px] font-bold
+          text-white
+          transition-colors duration-200
+          hover:bg-[#A02C3E]
+          focus-visible:outline
+          focus-visible:outline-2
+          focus-visible:outline-offset-4
+        "
+        style={{
+          backgroundColor: C.brand,
+          outlineColor: C.brand,
+        }}
+      >
+        Donar en especie
+      </a>
+
+      <a
+        href="#medicamentos"
+        className="
+          inline-flex min-h-12
+          items-center justify-center
+          rounded-md border
+          px-7
+          text-[14px] font-semibold
+          transition-colors duration-200
+          hover:bg-[#F7F8FA]
+          focus-visible:outline
+          focus-visible:outline-2
+          focus-visible:outline-offset-4
+        "
+        style={{
+          borderColor: C.border,
+          color: C.text,
+          outlineColor: C.brand,
+        }}
+      >
+        Ver medicamentos
+      </a>
+    </div>
+  );
+}
+
+// ============================================================
+// IMAGEN DEL HERO
+// ============================================================
+
+function HeroImage() {
+  const reducedMotion = useReducedMotion();
 
   return (
-    /*
-      La sección es position:relative y ocupa el ancho completo de la ventana.
-      No tiene padding horizontal propio — el contenido interno se encarga de eso.
-    */
-    <section
+    <div
+      className="
+        relative isolate
+        h-[420px] w-full
+        overflow-hidden
+        bg-[#F0F0F0]
+        sm:h-[520px]
+        lg:absolute
+        lg:inset-y-0
+        lg:right-0
+        lg:h-full
+        lg:w-[43%]
+      "
+    >
+      <motion.img
+        src="/home/dona2.JPG"
+        alt="Voluntaria de Fundación Mejoremos Realidades"
+        width="1000"
+        height="1200"
+        loading="eager"
+        fetchPriority="high"
+        decoding="async"
+        className="
+          absolute inset-0
+          block h-full w-full
+          object-cover object-top
+        "
+        initial={
+          reducedMotion
+            ? false
+            : { scale: 1.04, opacity: 0.8 }
+        }
+        animate={{
+          scale: 1,
+          opacity: 1,
+        }}
+        transition={{
+          duration: reducedMotion ? 0 : 1.2,
+          ease: EASE,
+        }}
+      />
+
+      {/* Transición sutil hacia el contenido */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute inset-y-0 left-0
+          hidden w-[25%]
+          bg-gradient-to-r
+          from-white to-transparent
+          lg:block
+        "
+      />
+
+      {/* Fundido inferior muy ligero */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute inset-0
+          bg-gradient-to-t
+          from-black/10 via-transparent
+          to-transparent
+        "
+      />
+    </div>
+  );
+}
+
+// ============================================================
+// PILAR DE IMPACTO
+// ============================================================
+
+function PillarItem({ number, title, body }) {
+  return (
+    <div
+      className="
+        grid grid-cols-[28px_1fr]
+        gap-3 border-t pt-4
+      "
       style={{
-        position:   "relative",
-        overflow:   "hidden",
-        background: "#fff",
-        minHeight:  "90vh",
-        display:    "flex",
-        alignItems: "stretch",
+        borderColor: C.border,
       }}
     >
-      {/* ── Imagen pegada al borde derecho y superior ── */}
-      <div
-        style={{
-          position: "absolute",
-          top:      0,
-          right:    0,
-          /* Ocupa ~42% del ancho de la pantalla */
-          width:    "42%",
-          height:   "100%",
-          zIndex:   0,
-        }}
+      <span
+        className="
+          pt-0.5
+          text-[11px]
+          font-bold
+          tracking-[0.08em]
+        "
+        style={{ color: C.brand }}
       >
-        <img
-          src="/home/dona2.JPG"
-          alt="Voluntaria de la Fundación Mejoremos Realidades"
-          style={{
-            width:          "100%",
-            height:         "100%",
-            objectFit:      "cover",
-            objectPosition: "center top",
-            display:        "block",
-          }}
-        />
-        {/* Gradiente izquierdo: funde imagen con fondo blanco */}
-        <div style={{
-          position:   "absolute",
-          inset:      0,
-          background: "linear-gradient(to right, #ffffff 0%, rgba(255,255,255,0.6) 25%, transparent 55%)",
-          pointerEvents: "none",
-        }} />
-        {/* Gradiente inferior: cierra suavemente hacia el blanco */}
-        <div style={{
-          position:   "absolute",
-          inset:      0,
-          background: "linear-gradient(to top, #ffffff 0%, transparent 18%)",
-          pointerEvents: "none",
-        }} />
+        {number}
+      </span>
+
+      <div>
+        <h3
+          className="
+            mb-1
+            text-[14px]
+            font-bold
+          "
+          style={{ color: C.text }}
+        >
+          {title}
+        </h3>
+
+        <p
+          className="
+            text-[12px]
+            leading-[1.7]
+            sm:text-[13px]
+          "
+          style={{ color: C.textMid }}
+        >
+          {body}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// HERO PRINCIPAL
+// ============================================================
+
+export default function DonarHero() {
+  const reducedMotion = useReducedMotion();
+
+  return (
+    <section
+      aria-labelledby="donar-hero-title"
+      className="
+        relative isolate
+        w-full overflow-hidden
+        bg-white
+      "
+    >
+      {/* Imagen a toda la altura en escritorio */}
+      <div className="hidden lg:block">
+        <HeroImage />
       </div>
 
-      {/* ── Contenido — sobre la imagen ── */}
+      {/* Contenido */}
       <div
-        style={{
-          position:  "relative",
-          zIndex:    1,
-          width:     "100%",
-          maxWidth:  1280,
-          margin:    "0 auto",
-          padding:   "8rem 2rem 5rem 4rem",
-          /* El contenido ocupa ~55% del ancho para no pisar la imagen */
-          display:   "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-        }}
-      >
-        {/* Limitar ancho del texto */}
-        <div style={{ maxWidth: 580 }}>
-
-          {/* Eyebrow */}
-          <div style={rise(0)}>
-            <SectionLabel>Donaciones</SectionLabel>
-          </div>
+          className="
+            relative z-10
+            mx-auto w-full
+            max-w-[1360px]
+            px-5 pb-12 pt-24
+            sm:px-8 sm:pb-14 sm:pt-28
+            lg:flex
+            lg:min-h-[720px]
+            lg:items-center
+            lg:px-12
+            lg:pb-20 lg:pt-32
+            xl:min-h-[780px]
+            xl:px-16
+            xl:pt-36
+            2xl:px-20
+          "
+        >
+        <motion.div
+          variants={
+            reducedMotion ? undefined : stagger
+          }
+          initial={
+            reducedMotion ? false : "hidden"
+          }
+          animate="visible"
+          className="
+            w-full
+            max-w-[610px]
+            lg:w-[57%]
+            lg:pr-8
+          "
+        >
+          {/* Etiqueta */}
+          <motion.div
+            variants={fadeUp}
+            className="mb-10"
+          >
+            <SectionLabel>
+              Donaciones
+            </SectionLabel>
+          </motion.div>
 
           {/* Título */}
-          <h1
-            style={{
-              ...rise(100),
-              fontSize:      "clamp(2.8rem, 5vw, 5rem)",
-              fontWeight:    900,
-              letterSpacing: "-0.03em",
-              lineHeight:    1.05,
-              color:         C.text,
-              margin:        "0 0 1.25rem",
-            }}
+          <motion.h1
+            id="donar-hero-title"
+            variants={fadeUp}
+            className="
+              mb-6
+              text-[clamp(2.8rem,5vw,4.9rem)]
+              font-extrabold
+              leading-[1.07]
+              tracking-[-0.055em]
+            "
+            style={{ color: C.text }}
           >
-            ¡Únete a la red de{" "}
-            <span style={{ color: C.brand }}>esperanza</span>!
-          </h1>
+            Tu ayuda puede{" "}
+            <span style={{ color: C.brand }}>
+              transformar vidas.
+            </span>
+          </motion.h1>
 
           {/* Descripción */}
-          <p
-            style={{
-              ...rise(200),
-              fontSize:     "1.05rem",
-              lineHeight:   1.7,
-              color:        C.textMid,
-              margin:       "0 0 2.25rem",
-            }}
+          <motion.p
+            variants={fadeUp}
+            className="
+              mb-8
+              max-w-[510px]
+              text-[15px]
+              leading-[1.85]
+              sm:text-[16px]
+            "
+            style={{ color: C.textMid }}
           >
-            Cuando donas, tu apoyo cruza fronteras y se convierte en fuerza
-            para quien lucha día a día. Cada gesto solidario cambia una historia.
-          </p>
+            Cuando donas, tu apoyo se convierte
+            en medicamentos, acompañamiento y
+            nuevas oportunidades para quienes
+            más lo necesitan.
+          </motion.p>
 
-          {/* CTAs */}
-          <div style={{ ...rise(290), display: "flex", flexWrap: "wrap", gap: 12, marginBottom: "3rem" }}>
-            <a
-              href="#especie"
-              style={{
-                display:       "inline-flex",
-                alignItems:    "center",
-                gap:           8,
-                fontWeight:    700,
-                fontSize:      "0.9rem",
-                padding:       "0.875rem 1.75rem",
-                borderRadius:  "999px",
-                background:    C.brand,
-                color:         "#fff",
-                textDecoration:"none",
-                boxShadow:     "0 4px 16px rgba(200,56,79,0.28)",
-                transition:    "transform 200ms, box-shadow 200ms",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.boxShadow = "0 8px 24px rgba(200,56,79,0.38)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "0 4px 16px rgba(200,56,79,0.28)";
-              }}
-            >
-              <IconGift size={16} stroke={2} />
-              Donar en especie
-            </a>
-            <a
-              href="#medicamentos"
-              style={{
-                display:       "inline-flex",
-                alignItems:    "center",
-                gap:           8,
-                fontWeight:    600,
-                fontSize:      "0.9rem",
-                padding:       "0.875rem 1.75rem",
-                borderRadius:  "999px",
-                border:        `1.5px solid ${C.border}`,
-                color:         C.textMid,
-                textDecoration:"none",
-                transition:    "transform 200ms, border-color 150ms, color 150ms",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform   = "translateY(-2px)";
-                e.currentTarget.style.borderColor = C.brand;
-                e.currentTarget.style.color       = C.brand;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform   = "translateY(0)";
-                e.currentTarget.style.borderColor = C.border;
-                e.currentTarget.style.color       = C.textMid;
-              }}
-            >
-              <IconPill size={16} stroke={2} />
-              Ver medicamentos
-            </a>
-          </div>
+          {/* Acciones */}
+          <motion.div variants={fadeUp}>
+            <HeroActions />
+          </motion.div>
 
-          {/* Divisor */}
-          <div style={{ ...rise(370), borderTop: `1px solid ${C.border}`, paddingTop: "2rem" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              {PILLARS.map(({ icon: Icon, title, body }) => (
-                <div key={title} style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-                  <div style={{
-                    width:          34,
-                    height:         34,
-                    borderRadius:   "0.6rem",
-                    background:     C.brandSoft,
-                    color:          C.brand,
-                    display:        "flex",
-                    alignItems:     "center",
-                    justifyContent: "center",
-                    flexShrink:     0,
-                  }}>
-                    <Icon size={16} stroke={2} />
-                  </div>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: "0.875rem", color: C.text, marginBottom: 2 }}>
-                      {title}
-                    </div>
-                    <p style={{ fontSize: "0.8rem", lineHeight: 1.55, color: C.textMid, margin: 0 }}>
-                      {body}
-                    </p>
-                  </div>
-                </div>
+          {/* Pilares */}
+          <motion.div
+            variants={fadeUp}
+            className="
+              mt-10
+              max-w-[540px]
+            "
+          >
+            <div
+              className="
+                mb-5 h-px w-full
+              "
+              style={{
+                backgroundColor: C.border,
+              }}
+            />
+
+            <p
+              className="
+                mb-5
+                text-[11px]
+                font-bold uppercase
+                tracking-[0.12em]
+              "
+              style={{ color: C.brand }}
+            >
+              El impacto de tu donación
+            </p>
+
+            <div
+              className="
+                grid grid-cols-1
+                gap-4
+                sm:grid-cols-2
+                lg:grid-cols-1
+              "
+            >
+              {PILLARS.map((pillar) => (
+                <PillarItem
+                  key={pillar.number}
+                  {...pillar}
+                />
               ))}
             </div>
-          </div>
-
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
 
-      {/* Chip flotante sobre la imagen */}
-      <div style={{
-        position:   "absolute",
-        bottom:     "2.5rem",
-        right:      "2rem",
-        zIndex:     2,
-        display:    "inline-flex",
-        alignItems: "center",
-        gap:        8,
-        padding:    "0.55rem 1.1rem",
-        borderRadius: "999px",
-        background:  "#fff",
-        boxShadow:   "0 8px 28px rgba(0,0,0,0.13)",
-        fontSize:    "0.78rem",
-        fontWeight:  700,
-        color:       C.text,
-        opacity:     mounted ? 1 : 0,
-        transition:  "opacity 1s ease 600ms",
-      }}>
-        <span style={{
-          width:        8,
-          height:       8,
-          borderRadius: "50%",
-          background:   C.brand,
-          display:      "inline-block",
-          flexShrink:   0,
-        }} />
-        Cambiando realidades
+      {/* Imagen debajo del contenido en móvil */}
+      <div className="lg:hidden">
+        <HeroImage />
       </div>
     </section>
   );

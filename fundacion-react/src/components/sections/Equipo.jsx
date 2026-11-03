@@ -1,32 +1,41 @@
+
 import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
+import {
+  motion,
+  AnimatePresence,
+  useReducedMotion,
+} from "framer-motion";
+import { IconX } from "@tabler/icons-react";
+
 import Navbar from "../layout/Navbar";
 import Footer from "../layout/Footer";
-import {
-  IconHeart,
-  IconArrowRight,
-  IconX,
-} from "@tabler/icons-react";
+
+// ============================================================
+// PALETA
+// ============================================================
 
 const C = {
-  brand:     "#C8384F",
+  brand: "#C8384F",
   brandSoft: "#FAE8EB",
-  secondary: "#3B5BA5",
-  accent:    "#F5A623",
-  bg:        "#F7F8FA",
-  surface:   "#FFFFFF",
-  text:      "#1A2235",
-  textMid:   "#4B5563",
-  textLight: "#9CA3AF",
-  border:    "#E5E7EB",
+  bg: "#F7F8FA",
+  surface: "#FFFFFF",
+  text: "#1A2235",
+  textMid: "#4B5563",
+  border: "#E5E7EB",
 };
+
+// ============================================================
+// EQUIPO
+// ============================================================
 
 const TEAM = [
   {
-    name:  "Marco Sánchez",
-    role:  "Presidente",
-    img:   "/personas/marco.jpeg",
-    short: "Fundador. Diagnosticado con leucemia mieloide crónica a los 15 años, creó Mejoremos Realidades para que nadie enfrente este camino solo.",
+    name: "Marco Sánchez",
+    role: "Presidente",
+    img: "/personas/marco.jpeg",
+    short:
+      "Fundador. Diagnosticado con leucemia mieloide crónica a los 15 años, creó Mejoremos Realidades para que nadie enfrente este camino solo.",
     bio: [
       "Un joven diagnosticado con leucemia mieloide crónica a los 15 años, preocupado por los pacientes con leucemia y sus familias, decidió emprender Fundación Mejoremos Realidades como un lugar en el que las personas se sintieran seguras, fueran orientadas y contaran con una red de apoyo que hiciera del diagnóstico algo más llevadero.",
       "Egresado de la licenciatura en Derecho, cree fervientemente que hay una vida vivible durante y después del diagnóstico, y confía en que sumando esfuerzos se puede hacer mucho por los pacientes.",
@@ -34,10 +43,11 @@ const TEAM = [
     ],
   },
   {
-    name:  "Danna Martínez",
-    role:  "Vicepresidenta Ejecutiva",
-    img:   "/personas/danna.jpg",
-    short: "Médica egresada con experiencia en atención primaria y proyectos de impacto social. Interesada en fortalecer la educación médica para pacientes y comunidades.",
+    name: "Danna Martínez",
+    role: "Vicepresidenta Ejecutiva",
+    img: "/personas/danna.jpg",
+    short:
+      "Médica egresada con experiencia en atención primaria y proyectos de impacto social. Interesada en fortalecer la educación médica para pacientes y comunidades.",
     bio: [
       "Egresada de la licenciatura en medicina, ha dedicado parte de su proceso de investigación médica a lo relacionado con la leucemia, sus derivados y el cáncer en general.",
       "Es una persona preocupada y ocupada por los demás, empática y solidaria. Considera que los médicos que son el primer contacto con el paciente deben desarrollar su sentido humano para entender que se está tratando con personas y causas que les aquejan en lo que más les importa.",
@@ -45,10 +55,11 @@ const TEAM = [
     ],
   },
   {
-    name:  "María José Martínez",
-    role:  "Directora Jurídica y de Cumplimiento Normativo",
-    img:   "/personas/majo.jpg",
-    short: "Abogada enfocada en Derechos Humanos y el acceso garantizado a la salud para todas las personas.",
+    name: "María José Martínez",
+    role: "Directora Jurídica y de Cumplimiento Normativo",
+    img: "/personas/majo.jpg",
+    short:
+      "Abogada enfocada en Derechos Humanos y el acceso garantizado a la salud para todas las personas.",
     bio: [
       "Licenciada en derecho, sus principales líneas de acción han sido el respeto a los Derechos Humanos y la obligación del Estado Mexicano de garantizar el acceso a ellos para todas y todos.",
       "En Mejoremos Realidades tiene como máximas la transparencia, la rendición de cuentas y el uso adecuado de los recursos en pro de las causas que aquí se siguen.",
@@ -56,10 +67,11 @@ const TEAM = [
     ],
   },
   {
-    name:  "Diego Castilla",
-    role:  "Director Médico y de Programas Institucionales",
-    img:   "/personas/diego.jpg",
-    short: "Estudiante de medicina con vocación para generar alianzas que garanticen el bienestar integral de los pacientes.",
+    name: "Diego Castilla",
+    role: "Director Médico y de Programas Institucionales",
+    img: "/personas/diego.jpg",
+    short:
+      "Estudiante de medicina con vocación para generar alianzas que garanticen el bienestar integral de los pacientes.",
     bio: [
       "Estudiante de medicina, con particular interés en generar alianzas que garanticen el bienestar de los pacientes con cáncer y calidad de vida para ellos y sus familias.",
       "Ha dedicado parte de su labor en la medicina a generar contacto de primera mano con los pacientes a fin de canalizarlos a donde su diagnóstico sea tratado integralmente.",
@@ -67,20 +79,22 @@ const TEAM = [
     ],
   },
   {
-    name:  "Andrea Amaya",
-    role:  "Directora de Planeación Técnica y Análisis Estratégico",
-    img:   "/personas/andrea.jpeg",
-    short: "Matemática aplicada que impulsa la innovación tecnológica al servicio de la equidad y la salud.",
+    name: "Andrea Amaya",
+    role: "Directora de Planeación Técnica y Análisis Estratégico",
+    img: "/personas/andrea.jpeg",
+    short:
+      "Matemática aplicada que impulsa la innovación tecnológica al servicio de la equidad y la salud.",
     bio: [
       "Licenciada en matemáticas aplicadas con un profundo interés en ayudar a las personas a través de la tecnología. Cree firmemente que la innovación solo tiene sentido cuando mejora la vida de los demás y promueve la equidad.",
       "En Mejoremos Realidades impulsa una forma más humana de entender la innovación como Directora de Planeación Técnica y Análisis Estratégico.",
     ],
   },
   {
-    name:  "Jovita Rodríguez González",
-    role:  "Directora de Atención Integral y Acompañamiento",
-    img:   "/personas/jovita.jpeg",
-    short: "Madre de un paciente con leucemia, lleva la experiencia vivida al corazón del acompañamiento integral.",
+    name: "Jovita Rodríguez González",
+    role: "Directora de Atención Integral y Acompañamiento",
+    img: "/personas/jovita.jpeg",
+    short:
+      "Madre de un paciente con leucemia, lleva la experiencia vivida al corazón del acompañamiento integral.",
     bio: [
       "Como madre de un paciente con leucemia, ha experimentado de primera mano los retos, las incertidumbres y las necesidades que enfrentan las personas diagnosticadas y sus familias. Esta vivencia le ha permitido desarrollar una profunda sensibilidad y un firme compromiso con el acompañamiento integral.",
       "En Fundación Mejoremos Realidades A.C. dirige el área de Atención Integral y Acompañamiento, coordinando acciones orientadas a brindar orientación, apoyo y seguimiento a pacientes y cuidadores.",
@@ -88,10 +102,11 @@ const TEAM = [
     ],
   },
   {
-    name:  "Gabriela Gómez Cruz",
-    role:  "Directora de Relaciones Estratégicas y Proyección Institucional",
-    img:   "/personas/gaby.jpg",
-    short: "Arquitecta e ingeniera con visión estratégica para posicionar la Fundación y construir alianzas de impacto.",
+    name: "Gabriela Gómez Cruz",
+    role: "Directora de Relaciones Estratégicas y Proyección Institucional",
+    img: "/personas/gaby.jpg",
+    short:
+      "Arquitecta e ingeniera con visión estratégica para posicionar la Fundación y construir alianzas de impacto.",
     bio: [
       "Arquitecta e ingeniera con amplia experiencia en el desarrollo, coordinación y gestión de proyectos, así como en el fortalecimiento de relaciones institucionales.",
       "Al frente de la Dirección de Relaciones Estratégicas y Proyección Institucional, impulsa la imagen institucional de la Fundación, fortalece su presencia ante diversos sectores y consolida alianzas clave.",
@@ -100,295 +115,737 @@ const TEAM = [
   },
 ];
 
-function useReveal(threshold = 0.08) {
-  const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } },
-      { threshold }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return [ref, visible];
-}
+// ============================================================
+// ANIMACIONES
+// ============================================================
 
-function SectionLabel({ children, light = false }) {
-  return (
-    <div className="flex items-center gap-3 mb-4">
-      <IconHeart size={15} stroke={2} style={{ color: light ? "rgba(255,255,255,0.6)" : C.brand }} />
-      <span className="text-xs font-bold tracking-widest uppercase"
-        style={{ color: light ? "rgba(255,255,255,0.65)" : C.brand }}>
-        {children}
-      </span>
-    </div>
-  );
-}
+const EASE = [0.22, 1, 0.36, 1];
 
-// ─── Modal ────────────────────────────────────────────────────────────────────
-function ProfileModal({ member, onClose }) {
-  useEffect(() => {
-    const fn = (e) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", fn);
-    return () => window.removeEventListener("keydown", fn);
-  }, [onClose]);
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = ""; };
-  }, []);
+const fadeUp = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+  },
+};
 
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "rgba(10,14,30,0.82)", backdropFilter: "blur(8px)" }}
-      onClick={onClose}
-    >
-      <div
-        className="relative w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl"
-        style={{ background: C.surface, maxHeight: "90vh" }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="relative h-64 overflow-hidden">
-          <img src={member.img} alt={member.name}
-            className="w-full h-full object-cover object-top" />
-          <div className="absolute inset-0"
-            style={{ background: "linear-gradient(to top, rgba(10,14,30,0.9) 0%, rgba(10,14,30,0.2) 60%, transparent 100%)" }} />
-          <button onClick={onClose}
-            className="absolute top-4 right-4 flex items-center justify-center rounded-full transition-all hover:scale-110"
-            style={{ width: 38, height: 38, background: "rgba(255,255,255,0.15)", backdropFilter: "blur(4px)", color: "#fff" }}>
-            <IconX size={18} stroke={2} />
-          </button>
-          <div className="absolute bottom-5 left-7">
-            <div className="font-black text-2xl" style={{ color: "#fff", letterSpacing: "-0.02em" }}>{member.name}</div>
-            <div className="text-xs font-bold tracking-widest uppercase mt-1" style={{ color: C.brand }}>{member.role}</div>
-          </div>
-        </div>
-        <div className="p-8 overflow-y-auto space-y-4" style={{ maxHeight: "calc(90vh - 256px)" }}>
-          {member.bio.map((p, i) => (
-            <p key={i} className="text-base leading-relaxed" style={{ color: C.textMid }}>{p}</p>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
+const stagger = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.05,
+    },
+  },
+};
 
-// ─── Hero — foto grupal ───────────────────────────────────────────────────────
+// ============================================================
+// HERO
+// ============================================================
+
 function Hero() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { const t = setTimeout(() => setMounted(true), 80); return () => clearTimeout(t); }, []);
-  const rise = (delay = 0) => ({
-    transition: `opacity .9s cubic-bezier(.16,1,.3,1) ${delay}ms, transform .9s cubic-bezier(.16,1,.3,1) ${delay}ms`,
-    opacity: mounted ? 1 : 0,
-    transform: mounted ? "translateY(0)" : "translateY(24px)",
-  });
+  const reducedMotion = useReducedMotion();
 
   return (
-    <section className="relative flex items-end overflow-hidden" style={{ minHeight: "80vh" }}>
-      <style>{`
-        @keyframes slowzoom { from { transform: scale(1); } to { transform: scale(1.06); } }
-        .hero-img { animation: slowzoom 14s ease-in-out infinite alternate; }
-        @media (prefers-reduced-motion: reduce) { .hero-img { animation: none; } }
-      `}</style>
+    <section
+      aria-labelledby="team-hero-title"
+      className="
+        relative flex
+        min-h-[600px]
+        items-end
+        overflow-hidden
+        sm:min-h-[650px]
+        lg:min-h-[720px]
+      "
+      style={{ backgroundColor: C.text }}
+    >
+      {/* Fotografía grupal */}
+      <motion.img
+        src="/personas/equipo.jpeg"
+        alt="Equipo de Fundación Mejoremos Realidades"
+        className="
+          absolute inset-0
+          h-full w-full
+          object-cover
+          object-center
+        "
+        initial={
+          reducedMotion
+            ? false
+            : { scale: 1.035 }
+        }
+        animate={{ scale: 1 }}
+        transition={{
+          duration: reducedMotion ? 0 : 1.5,
+          ease: EASE,
+        }}
+      />
 
-      {/* Foto grupal con zoom lento */}
-      <div className="absolute inset-0 overflow-hidden">
-        <img src="/personas/equipo.jpeg" alt="Equipo Mejoremos Realidades"
-          className="hero-img w-full h-full object-cover object-center" />
-      </div>
+      {/* Overlay */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(10,14,30,0.2) 0%, rgba(10,14,30,0.45) 45%, rgba(10,14,30,0.9) 100%)",
+        }}
+      />
 
-      {/* Overlay — más denso abajo */}
-      <div className="absolute inset-0" style={{
-        background: "linear-gradient(to bottom, rgba(10,14,30,0.2) 0%, rgba(10,14,30,0.55) 45%, rgba(10,14,30,0.94) 100%)",
-      }} />
-      <div className="absolute bottom-0 left-0 pointer-events-none" style={{
-        width: "50rem", height: "30rem",
-        background: `radial-gradient(ellipse at 0% 100%, ${C.brand}28 0%, transparent 60%)`,
-      }} />
+      {/* Contenido */}
+      <div
+        className="
+          relative z-10
+          mx-auto w-full
+          max-w-[1360px]
+          px-5 pb-14 pt-32
+          sm:px-8 sm:pb-16
+          lg:px-12 lg:pb-20
+          xl:px-16
+          2xl:px-20
+        "
+      >
+        <motion.div
+          variants={
+            reducedMotion ? undefined : stagger
+          }
+          initial={reducedMotion ? false : "hidden"}
+          animate="visible"
+          className="max-w-[850px]"
+        >
+          <motion.p
+            variants={fadeUp}
+            className="
+              mb-3 text-[11px]
+              font-bold uppercase
+              tracking-[0.14em]
+              text-white/75
+            "
+          >
+            Las personas detrás de la causa
+          </motion.p>
 
-      <div className="relative z-10 w-full px-8 sm:px-14 lg:px-20 pb-24 pt-40">
-        <div className="max-w-7xl">
-          <div style={rise(0)}><SectionLabel light>Las personas detrás de la causa</SectionLabel></div>
-          <h1 className="font-black leading-none mb-5"
-            style={{ ...rise(120), fontSize: "clamp(3rem, 8vw, 7rem)", color: "#fff", letterSpacing: "-0.03em" }}>
-            Nuestro <span style={{ color: C.brand }}>equipo</span>
-          </h1>
-          <p className="text-base leading-relaxed max-w-xl"
-            style={{ ...rise(240), color: "rgba(255,255,255,0.68)" }}>
-            Médicos, abogados, especialistas y personas con experiencia propia, unidos por
-            un mismo propósito: que ningún paciente con leucemia enfrente solo su diagnóstico.
-          </p>
-        </div>
+          <motion.h1
+            id="team-hero-title"
+            variants={fadeUp}
+            className="
+              mb-5
+              text-[clamp(3rem,7vw,6.5rem)]
+              font-extrabold
+              leading-[1.03]
+              tracking-[-0.055em]
+              text-white
+            "
+          >
+            Nuestro{" "}
+            <span className="text-[#F08B9A]">
+              equipo.
+            </span>
+          </motion.h1>
+
+          <motion.p
+            variants={fadeUp}
+            className="
+              max-w-[610px]
+              text-[15px]
+              leading-[1.8]
+              text-white/85
+              sm:text-[17px]
+            "
+          >
+            Médicos, abogados, especialistas y
+            personas con experiencia propia, unidos
+            por un mismo propósito: que ningún
+            paciente con leucemia enfrente solo
+            su diagnóstico.
+          </motion.p>
+        </motion.div>
       </div>
     </section>
   );
 }
 
-// ─── Card de cada miembro — ancho completo ────────────────────────────────────
-function MemberRow({ member, index }) {
-  const [ref, visible] = useReveal();
-  const [hovered, setHovered] = useState(false);
-  const [selected, setSelected] = useState(null);
-  const isEven = index % 2 === 0;
+// ============================================================
+// MODAL DE PERFIL COMPLETO
+// ============================================================
+
+function ProfileModal({ member, onClose }) {
+  const reducedMotion = useReducedMotion();
+  const closeButtonRef = useRef(null);
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    const previousFocus = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+
+    document.body.style.overflow = "hidden";
+    closeButtonRef.current?.focus();
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+
+      if (event.key === "Tab") {
+        const focusable = modalRef.current?.querySelectorAll(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+
+        if (!focusable?.length) return;
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (
+          event.shiftKey &&
+          document.activeElement === first
+        ) {
+          event.preventDefault();
+          last.focus();
+        } else if (
+          !event.shiftKey &&
+          document.activeElement === last
+        ) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener(
+        "keydown",
+        handleKeyDown
+      );
+      previousFocus?.focus?.();
+    };
+  }, [onClose]);
 
   return (
-    <>
-      <div
-        ref={ref}
-        className={`group relative overflow-hidden cursor-pointer transition-all duration-700 ${
-          visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-        }`}
-        style={{
-          transitionDelay: `${index * 60}ms`,
-          borderBottom: `1px solid ${C.border}`,
+    <motion.div
+      className="
+        fixed inset-0 z-[100]
+        flex items-center
+        justify-center
+        p-4 sm:p-6
+      "
+      style={{
+        backgroundColor: "rgba(10,14,30,0.78)",
+      }}
+      initial={
+        reducedMotion
+          ? false
+          : { opacity: 0 }
+      }
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{
+        duration: reducedMotion ? 0 : 0.2,
+      }}
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <motion.div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="profile-modal-title"
+        aria-describedby="profile-modal-role"
+        className="
+          relative flex
+          max-h-[90dvh]
+          w-full max-w-[780px]
+          flex-col
+          overflow-hidden
+          rounded-lg
+          bg-white
+        "
+        initial={
+          reducedMotion
+            ? false
+            : { opacity: 0, y: 16 }
+        }
+        animate={{
+          opacity: 1,
+          y: 0,
         }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        onClick={() => setSelected(member)}
+        exit={{
+          opacity: 0,
+          y: 10,
+        }}
+        transition={{
+          duration: reducedMotion ? 0 : 0.3,
+          ease: EASE,
+        }}
       >
-        {/* Layout: imagen + info, alternado */}
-        <div className={`grid md:grid-cols-2 ${isEven ? "" : "md:[direction:rtl]"}`}
-          style={{ minHeight: 340 }}>
+        {/* Botón de cierre */}
+        <button
+          ref={closeButtonRef}
+          type="button"
+          onClick={onClose}
+          aria-label="Cerrar perfil"
+          className="
+            absolute right-4 top-4
+            z-10 flex h-10 w-10
+            items-center justify-center
+            rounded-md bg-white
+            text-[#1A2235]
+            transition-colors
+            hover:bg-[#F3F4F6]
+            focus-visible:outline
+            focus-visible:outline-2
+            focus-visible:outline-offset-2
+          "
+          style={{ outlineColor: C.brand }}
+        >
+          <IconX
+            size={20}
+            stroke={1.8}
+            aria-hidden="true"
+          />
+        </button>
 
-          {/* Foto */}
-          <div className="relative overflow-hidden" style={{ minHeight: 340 }}>
+        <div className="overflow-y-auto">
+          {/* Fotografía completa */}
+          <div
+            className="
+              flex h-[260px]
+              items-center justify-center
+              overflow-hidden
+              bg-[#F0F0F0]
+              sm:h-[360px]
+            "
+          >
             <img
               src={member.img}
               alt={member.name}
-              className="w-full h-full object-cover object-top transition-transform duration-700"
-              style={{
-                transform: hovered ? "scale(1.07)" : "scale(1)",
-                minHeight: 340,
-              }}
+              className="
+                h-full w-full
+                object-contain
+              "
             />
-            {/* Overlay foto */}
-            <div className="absolute inset-0 transition-opacity duration-500"
-              style={{
-                background: isEven
-                  ? "linear-gradient(to right, transparent 55%, rgba(247,248,250,1) 100%)"
-                  : "linear-gradient(to left,  transparent 55%, rgba(247,248,250,1) 100%)",
-                opacity: hovered ? 0.6 : 1,
-              }} />
-            {/* Número de índice decorativo */}
-            <div
-              className="absolute top-6 transition-all duration-500"
-              style={{
-                [isEven ? "left" : "right"]: 24,
-                opacity: hovered ? 0 : 0.12,
-                fontSize: "7rem",
-                fontWeight: 900,
-                lineHeight: 1,
-                color: C.brand,
-                letterSpacing: "-0.06em",
-                userSelect: "none",
-              }}>
-              {String(index + 1).padStart(2, "0")}
-            </div>
           </div>
 
-          {/* Texto */}
+          {/* Biografía */}
           <div
-            className="flex flex-col justify-center px-12 py-12"
-            style={{ direction: "ltr", background: hovered ? C.brandSoft : C.bg, transition: "background 0.4s" }}
+            className="
+              px-6 py-7
+              sm:px-9 sm:py-9
+            "
           >
-            {/* Rol */}
-            <div className="text-xs font-bold tracking-widest uppercase mb-3 transition-colors duration-300"
-              style={{ color: C.brand }}>
+            <p
+              id="profile-modal-role"
+              className="
+                mb-2 text-[12px]
+                font-semibold
+              "
+              style={{ color: C.brand }}
+            >
               {member.role}
-            </div>
-            {/* Nombre */}
+            </p>
+
             <h2
-              className="font-black leading-tight mb-4 transition-all duration-300"
-              style={{
-                fontSize: "clamp(1.8rem, 3vw, 2.6rem)",
-                color: C.text,
-                letterSpacing: "-0.025em",
-                transform: hovered ? "translateX(8px)" : "translateX(0)",
-              }}>
+              id="profile-modal-title"
+              className="
+                mb-6
+                text-[clamp(1.7rem,3vw,2.5rem)]
+                font-extrabold
+                leading-[1.15]
+                tracking-[-0.04em]
+              "
+              style={{ color: C.text }}
+            >
               {member.name}
             </h2>
-            {/* Short bio */}
-            <p className="text-base leading-relaxed mb-6" style={{ color: C.textMid, maxWidth: "38ch" }}>
-              {member.short}
-            </p>
-            {/* CTA */}
-            <div className="inline-flex items-center gap-2 text-sm font-bold transition-all duration-300"
-              style={{
-                color: C.brand,
-                transform: hovered ? "translateX(6px)" : "translateX(0)",
-              }}>
-              Ver perfil completo
-              <IconArrowRight size={16} stroke={2.25} />
+
+            <div className="space-y-4">
+              {member.bio.map((paragraph, index) => (
+                <p
+                  key={index}
+                  className="
+                    text-[14px]
+                    leading-[1.85]
+                    sm:text-[15px]
+                  "
+                  style={{ color: C.textMid }}
+                >
+                  {paragraph}
+                </p>
+              ))}
             </div>
           </div>
         </div>
-      </div>
-
-      {selected && (
-        <ProfileModal member={selected} onClose={() => setSelected(null)} />
-      )}
-    </>
+      </motion.div>
+    </motion.div>
   );
 }
 
-// ─── CTA ──────────────────────────────────────────────────────────────────────
-function CtaBanner() {
-  const [ref, visible] = useReveal();
+// ============================================================
+// TARJETA DE INTEGRANTE
+// ============================================================
+
+function MemberCard({ member, onSelect }) {
+  const reducedMotion = useReducedMotion();
+
   return (
-    <section ref={ref} className="py-24 px-8 sm:px-14 lg:px-20" style={{ background: C.brand }}>
-      <div className={`max-w-7xl grid md:grid-cols-2 gap-10 items-center transition-all duration-700 ${
-        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      }`}>
-        <div>
-          <div className="text-xs font-bold tracking-widest uppercase mb-3"
-            style={{ color: "rgba(255,255,255,0.6)" }}>Únete a la causa</div>
-          <h2 className="font-black leading-tight"
-            style={{ fontSize: "clamp(2rem, 5vw, 3rem)", color: "#fff", letterSpacing: "-0.025em" }}>
-            Sé parte de{" "}
-            <span style={{ color: C.accent }}>nuestra misión</span>
-          </h2>
-        </div>
-        <div className="flex flex-col gap-4 md:items-end">
-          <p className="text-base leading-relaxed md:text-right max-w-sm"
-            style={{ color: "rgba(255,255,255,0.78)" }}>
-            Juntos podemos acompañar a más pacientes y familias que enfrentan un diagnóstico que cambia la vida.
+    <motion.article
+      initial={
+        reducedMotion
+          ? false
+          : { opacity: 0, y: 20 }
+      }
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{
+        duration: reducedMotion ? 0 : 0.6,
+        ease: EASE,
+      }}
+      className="group flex min-w-0 flex-col"
+    >
+      {/* Fotografía sin recortar */}
+      <div
+        className="
+          flex aspect-[3/4]
+          items-center justify-center
+          overflow-hidden
+          bg-[#F0F0F0]
+        "
+      >
+        <img
+          src={member.img}
+          alt={member.name}
+          loading="lazy"
+          decoding="async"
+          className="
+            block h-full w-full
+            object-contain
+            transition-transform
+            duration-700
+            group-hover:scale-[1.025]
+          "
+        />
+      </div>
+
+      {/* Información */}
+      <div className="flex flex-1 flex-col pt-5">
+        <p
+          className="
+            mb-2 text-[12px]
+            font-semibold
+            leading-[1.5]
+          "
+          style={{ color: C.brand }}
+        >
+          {member.role}
+        </p>
+
+        <h3
+          className="
+            text-[clamp(1.3rem,2vw,1.8rem)]
+            font-bold
+            leading-[1.2]
+            tracking-[-0.035em]
+          "
+          style={{ color: C.text }}
+        >
+          {member.name}
+        </h3>
+
+        <p
+          className="
+            mt-3 text-[14px]
+            leading-[1.75]
+          "
+          style={{ color: C.textMid }}
+        >
+          {member.short}
+        </p>
+
+        <button
+          type="button"
+          onClick={() => onSelect(member)}
+          className="
+            mt-5 w-fit
+            border-b pb-1
+            text-[13px]
+            font-bold
+            transition-colors
+            hover:text-[#A92D42]
+            focus-visible:outline
+            focus-visible:outline-2
+            focus-visible:outline-offset-4
+          "
+          style={{
+            color: C.brand,
+            borderColor: C.brand,
+            outlineColor: C.brand,
+          }}
+        >
+          Conocer su historia
+          <span className="sr-only">
+            {" "}de {member.name}
+          </span>
+        </button>
+      </div>
+    </motion.article>
+  );
+}
+
+// ============================================================
+// LISTADO DEL EQUIPO
+// ============================================================
+
+function TeamList({ onSelect }) {
+  const reducedMotion = useReducedMotion();
+
+  return (
+    <section
+      aria-labelledby="team-list-title"
+      className="
+        px-5 py-12
+        sm:px-8 sm:py-14
+        lg:px-12 lg:py-16
+        xl:px-16
+        2xl:px-20
+      "
+      style={{ backgroundColor: C.surface }}
+    >
+      <div className="mx-auto max-w-[1360px]">
+        {/* Encabezado */}
+        <motion.div
+          initial={
+            reducedMotion
+              ? false
+              : { opacity: 0, y: 18 }
+          }
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{
+            duration: reducedMotion ? 0 : 0.6,
+            ease: EASE,
+          }}
+          className="mb-10 max-w-[750px]"
+        >
+          <p
+            className="
+              mb-3 text-[11px]
+              font-bold uppercase
+              tracking-[0.14em]
+            "
+            style={{ color: C.brand }}
+          >
+            Nuestro equipo
           </p>
-          <div className="flex flex-wrap gap-4">
-            <Link to="/donar"
-              className="inline-flex items-center gap-2 font-bold text-sm px-9 py-4 rounded-full transition-all duration-200 hover:-translate-y-0.5"
-              style={{ background: "#fff", color: C.brand }}>
-              <IconHeart size={18} stroke={2} /> Donar ahora
-            </Link>
-            <Link to="/servicios"
-              className="inline-flex items-center gap-2 font-semibold text-sm px-9 py-4 rounded-full border-2 transition-all duration-200 hover:-translate-y-0.5"
-              style={{ borderColor: "rgba(255,255,255,0.45)", color: "#fff" }}>
-              Nuestros servicios
-            </Link>
-          </div>
+
+          <h2
+            id="team-list-title"
+            className="
+              text-[clamp(2rem,3.6vw,3.25rem)]
+              font-extrabold
+              leading-[1.12]
+              tracking-[-0.045em]
+            "
+            style={{ color: C.text }}
+          >
+            Personas comprometidas
+            con transformar realidades.
+          </h2>
+        </motion.div>
+
+        {/* Cuadrícula */}
+        <div
+          className="
+            grid grid-cols-1
+            gap-x-7 gap-y-12
+            sm:grid-cols-2
+            lg:grid-cols-3
+            lg:gap-x-9
+            lg:gap-y-14
+          "
+        >
+          {TEAM.map((member) => (
+            <MemberCard
+              key={member.name}
+              member={member}
+              onSelect={onSelect}
+            />
+          ))}
         </div>
       </div>
     </section>
   );
 }
 
-export default function Equipo() {
+// ============================================================
+// CTA FINAL
+// ============================================================
+
+function CtaBanner() {
+  const reducedMotion = useReducedMotion();
+
   return (
-    <div className="min-h-screen font-sans" style={{ background: C.bg }}>
+    <section
+      aria-labelledby="team-cta-title"
+      className="
+        px-5 py-12
+        sm:px-8 sm:py-14
+        lg:px-12 lg:py-16
+        xl:px-16
+        2xl:px-20
+      "
+      style={{ backgroundColor: C.brand }}
+    >
+      <motion.div
+        variants={
+          reducedMotion ? undefined : stagger
+        }
+        initial={reducedMotion ? false : "hidden"}
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.15 }}
+        className="
+          mx-auto grid
+          max-w-[1360px]
+          grid-cols-1
+          items-center
+          gap-7
+          md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]
+          md:gap-10
+        "
+      >
+        <div>
+          <motion.p
+            variants={fadeUp}
+            className="
+              mb-3 text-[11px]
+              font-bold uppercase
+              tracking-[0.14em]
+              text-white/70
+            "
+          >
+            Únete a la causa
+          </motion.p>
+
+          <motion.h2
+            id="team-cta-title"
+            variants={fadeUp}
+            className="
+              text-[clamp(2rem,4vw,3.5rem)]
+              font-extrabold
+              leading-[1.12]
+              tracking-[-0.045em]
+              text-white
+            "
+          >
+            Sé parte de{" "}
+            <span className="text-white/75">
+              nuestra misión.
+            </span>
+          </motion.h2>
+        </div>
+
+        <div className="md:justify-self-end">
+          <motion.p
+            variants={fadeUp}
+            className="
+              mb-5 max-w-[410px]
+              text-[14px]
+              leading-[1.8]
+              text-white/85
+              sm:text-[15px]
+              md:text-right
+            "
+          >
+            Juntos podemos acompañar a más pacientes
+            y familias que enfrentan un diagnóstico
+            que cambia la vida.
+          </motion.p>
+
+          <motion.div
+            variants={fadeUp}
+            className="
+              flex flex-wrap gap-3
+              md:justify-end
+            "
+          >
+            <Link
+              to="/donar"
+              className="
+                inline-flex min-h-12
+                items-center justify-center
+                rounded-md bg-white
+                px-7 text-[14px]
+                font-bold
+                transition-colors
+                hover:bg-[#F5F5F5]
+              "
+              style={{ color: C.brand }}
+            >
+              Donar ahora
+            </Link>
+
+            <Link
+              to="/servicios"
+              className="
+                inline-flex min-h-12
+                items-center justify-center
+                rounded-md
+                border border-white/60
+                px-7 text-[14px]
+                font-semibold
+                text-white
+                transition-colors
+                hover:bg-white/10
+              "
+            >
+              Nuestros servicios
+            </Link>
+          </motion.div>
+        </div>
+      </motion.div>
+    </section>
+  );
+}
+
+// ============================================================
+// PÁGINA PRINCIPAL
+// ============================================================
+
+export default function Equipo() {
+  const [selectedMember, setSelectedMember] = useState(null);
+
+  return (
+    <div
+      className="min-h-screen font-sans"
+      style={{ backgroundColor: C.bg }}
+    >
       <Navbar />
-      <Hero />
 
-      {/* Todos en filas de ancho completo */}
-      <div style={{ background: C.bg }}>
-        {TEAM.map((m, i) => (
-          <MemberRow key={m.name} member={m} index={i} />
-        ))}
-      </div>
+      <main>
+        <Hero />
 
-      <CtaBanner />
+        <TeamList onSelect={setSelectedMember} />
+
+        <CtaBanner />
+      </main>
+
       <Footer />
+
+      <AnimatePresence>
+        {selectedMember && (
+          <ProfileModal
+            key={selectedMember.name}
+            member={selectedMember}
+            onClose={() => setSelectedMember(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

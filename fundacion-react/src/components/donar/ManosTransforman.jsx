@@ -1,111 +1,388 @@
-// src/public/pages/donar/ManosTransforman.jsx
+
 import {
+  motion,
+  useReducedMotion,
+} from "framer-motion";
+
+import {
+  IconArrowUpRight,
   IconBriefcase,
   IconUserHeart,
   IconUsers,
 } from "@tabler/icons-react";
-import { C, useReveal } from "./tokens";
+
+import { C } from "./tokens";
 import SectionLabel from "./SectionLabel";
 
+// ============================================================
+// CONFIGURACIÓN
+// ============================================================
+
+const EASE = [0.22, 1, 0.36, 1];
+
 const TIPOS = [
-  { icon: IconBriefcase, tipo: "Empresa aliada" },
-  { icon: IconUsers,     tipo: "Embajador" },
-  { icon: IconUserHeart, tipo: "Donador individual" },
+  {
+    number: "01",
+    icon: IconBriefcase,
+    tipo: "Empresa aliada",
+    description:
+      "Organizaciones que suman recursos y compromiso para fortalecer las iniciativas de la Fundación.",
+  },
+  {
+    number: "02",
+    icon: IconUsers,
+    tipo: "Embajador",
+    description:
+      "Personas que comparten nuestra causa y ayudan a llevar nuestro mensaje a más comunidades.",
+  },
+  {
+    number: "03",
+    icon: IconUserHeart,
+    tipo: "Donador individual",
+    description:
+      "Personas que, a través de sus aportaciones, contribuyen a mejorar la realidad de quienes más lo necesitan.",
+  },
 ];
 
+const fadeUp = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+  },
+};
+
+const VIEWPORT = {
+  once: true,
+  amount: 0.15,
+};
+
+// ============================================================
+// TIPO DE DONADOR
+// ============================================================
+
+function DonorType({
+  number,
+  icon: Icon,
+  tipo,
+  description,
+  index,
+}) {
+  const reducedMotion = useReducedMotion();
+
+  return (
+    <motion.article
+      variants={reducedMotion ? undefined : fadeUp}
+      initial={reducedMotion ? false : "hidden"}
+      whileInView="visible"
+      viewport={VIEWPORT}
+      transition={{
+        duration: reducedMotion ? 0 : 0.65,
+        delay: reducedMotion ? 0 : index * 0.1,
+        ease: EASE,
+      }}
+      className="
+        group flex h-full
+        flex-col
+        border-t pt-6
+        sm:pt-7
+      "
+      style={{ borderColor: C.border }}
+    >
+      {/* Número e icono */}
+      <div
+        className="
+          mb-8 flex
+          items-start
+          justify-between
+        "
+      >
+        <span
+          className="
+            text-[clamp(2.6rem,4vw,3.7rem)]
+            font-light
+            leading-none
+            tracking-[-0.07em]
+          "
+          style={{ color: C.brand }}
+        >
+          {number}
+        </span>
+
+        <Icon
+          size={27}
+          stroke={1.35}
+          style={{ color: C.brand }}
+          aria-hidden="true"
+        />
+      </div>
+
+      {/* Título */}
+      <h3
+        className="
+          mb-3
+          text-[clamp(1.25rem,2vw,1.65rem)]
+          font-bold
+          leading-[1.3]
+          tracking-[-0.035em]
+        "
+        style={{ color: C.text }}
+      >
+        {tipo}
+      </h3>
+
+      {/* Descripción */}
+      <p
+        className="
+          mb-8
+          max-w-[360px]
+          text-[14px]
+          leading-[1.8]
+        "
+        style={{ color: C.textMid }}
+      >
+        {description}
+      </p>
+
+      {/* Estado editorial */}
+      <div
+        className="
+          mt-auto flex
+          items-center gap-2
+          border-t pt-4
+        "
+        style={{ borderColor: C.border }}
+      >
+        <span
+          className="
+            text-[12px]
+            font-medium
+          "
+          style={{ color: C.textMid }}
+        >
+          Próximamente compartiremos
+          sus historias
+        </span>
+      </div>
+    </motion.article>
+  );
+}
+
+// ============================================================
+// ENCABEZADO
+// ============================================================
+
+function SectionHeader() {
+  const reducedMotion = useReducedMotion();
+
+  return (
+    <motion.div
+      variants={reducedMotion ? undefined : fadeUp}
+      initial={reducedMotion ? false : "hidden"}
+      whileInView="visible"
+      viewport={VIEWPORT}
+      transition={{
+        duration: reducedMotion ? 0 : 0.7,
+        ease: EASE,
+      }}
+      className="
+        mb-10
+        lg:mb-14
+      "
+    >
+      <SectionLabel>
+        Donadores
+      </SectionLabel>
+
+      <div
+        className="
+          grid grid-cols-1
+          items-end gap-6
+          lg:grid-cols-2
+          lg:gap-16
+        "
+      >
+        {/* Título */}
+        <h2
+          id="manos-transforman-title"
+          className="
+            max-w-[650px]
+            text-[clamp(2.1rem,3.8vw,3.6rem)]
+            font-extrabold
+            leading-[1.12]
+            tracking-[-0.05em]
+          "
+          style={{ color: C.text }}
+        >
+          Manos que{" "}
+          <span style={{ color: C.brand }}>
+            transforman.
+          </span>
+        </h2>
+
+        {/* Descripción */}
+        <p
+          className="
+            max-w-[580px]
+            text-[15px]
+            leading-[1.85]
+            sm:text-[16px]
+          "
+          style={{ color: C.textMid }}
+        >
+          Detrás de cada donación hay una
+          historia de generosidad, compromiso
+          y esperanza. Compartiremos los
+          relatos de quienes han decidido
+          unir su esfuerzo al de la Fundación.
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+
+// ============================================================
+// SECCIÓN PRINCIPAL
+// ============================================================
+
 export default function ManosTransforman() {
-  const [ref, visible] = useReveal();
+  const reducedMotion = useReducedMotion();
 
   return (
     <section
-      ref={ref}
-      style={{ background: C.bg, padding: "7rem 0" }}
-      className="px-8 sm:px-14 lg:px-20"
+      aria-labelledby="manos-transforman-title"
+      className="
+        overflow-hidden
+        px-5 py-12
+        sm:px-8 sm:py-14
+        lg:px-12 lg:py-16
+        xl:px-16
+        2xl:px-20
+      "
+      style={{
+        backgroundColor: C.surface,
+      }}
     >
-      <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+      <div
+        className="
+          mx-auto w-full
+          max-w-[1360px]
+        "
+      >
+        {/* Encabezado */}
+        <SectionHeader />
 
-        {/* Header */}
+        {/* Tipos de donadores */}
         <div
-          style={{
-            marginBottom: "3.5rem",
-            opacity:      visible ? 1 : 0,
-            transform:    visible ? "translateY(0)" : "translateY(20px)",
-            transition:   "opacity .7s ease, transform .7s ease",
-          }}
+          className="
+            grid grid-cols-1
+            gap-10
+            sm:grid-cols-2
+            sm:gap-8
+            lg:grid-cols-3
+            lg:gap-12
+          "
         >
-          <SectionLabel>Donadores</SectionLabel>
-          <h2 style={{
-            fontSize:      "clamp(2rem, 3.5vw, 2.8rem)",
-            fontWeight:    900,
-            letterSpacing: "-0.025em",
-            lineHeight:    1.15,
-            color:         C.text,
-            margin:        "0 0 0.75rem",
-          }}>
-            Manos que{" "}
-            <span style={{ color: C.brand }}>transforman</span>
-          </h2>
-          <p style={{ fontSize: "1rem", lineHeight: 1.7, color: C.textMid, maxWidth: 620, margin: 0 }}>
-            Detrás de cada donación hay una historia de generosidad, compromiso y
-            esperanza. Compartiremos los relatos de quienes han decidido unir su
-            esfuerzo al de la Fundación.
-          </p>
-          <div style={{ width: 56, height: 3, borderRadius: 99, background: C.brand, marginTop: "1.5rem" }} />
-        </div>
-
-        {/* Placeholders */}
-        <div
-          style={{
-            display:             "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-            gap:                 "1.25rem",
-            opacity:             visible ? 1 : 0,
-            transform:           visible ? "translateY(0)" : "translateY(24px)",
-            transition:          "opacity .7s ease .15s, transform .7s ease .15s",
-          }}
-        >
-          {TIPOS.map(({ icon: Icon, tipo }) => (
-            <div
-              key={tipo}
-              style={{
-                borderRadius: "1.5rem",
-                padding:      "2rem",
-                background:   C.surface,
-                border:       `1.5px dashed ${C.border}`,
-                display:      "flex",
-                flexDirection:"column",
-                alignItems:   "center",
-                textAlign:    "center",
-              }}
-            >
-              <div style={{
-                width:          52,
-                height:         52,
-                borderRadius:   "1rem",
-                background:     C.brandSoft,
-                display:        "flex",
-                alignItems:     "center",
-                justifyContent: "center",
-                marginBottom:   "1.25rem",
-              }}>
-                <Icon size={24} stroke={1.5} style={{ color: C.brand }} />
-              </div>
-              <div style={{
-                fontSize:      "0.65rem",
-                fontWeight:    800,
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                color:         C.brand,
-                marginBottom:  "0.75rem",
-              }}>
-                {tipo}
-              </div>
-              <p style={{ fontSize: "0.85rem", color: C.textLight, margin: 0 }}>
-                Próximamente compartiremos su historia aquí.
-              </p>
-            </div>
+          {TIPOS.map((item, index) => (
+            <DonorType
+              key={item.number}
+              {...item}
+              index={index}
+            />
           ))}
         </div>
+
+        {/* Cierre */}
+        <motion.div
+          variants={reducedMotion ? undefined : fadeUp}
+          initial={reducedMotion ? false : "hidden"}
+          whileInView="visible"
+          viewport={VIEWPORT}
+          transition={{
+            duration: reducedMotion ? 0 : 0.65,
+            ease: EASE,
+          }}
+          className="
+            mt-12 flex
+            flex-col
+            items-start
+            justify-between
+            gap-5
+            border-t pt-7
+            sm:flex-row
+            sm:items-center
+            lg:mt-16
+          "
+          style={{
+            borderColor: C.border,
+          }}
+        >
+          <div>
+            <p
+              className="
+                mb-1
+                text-[15px]
+                font-bold
+              "
+              style={{ color: C.text }}
+            >
+              Cada forma de ayudar cuenta.
+            </p>
+
+            <p
+              className="
+                text-[13px]
+                leading-[1.7]
+              "
+              style={{ color: C.textMid }}
+            >
+              Tu participación también puede
+              formar parte de esta historia.
+            </p>
+          </div>
+
+          <a
+            href="#especie"
+            className="
+              group inline-flex
+              min-h-11
+              items-center
+              gap-2
+              border-b-2
+              pb-1
+              text-[13px]
+              font-bold
+              transition-colors
+              hover:text-[#A02C3E]
+              focus-visible:outline
+              focus-visible:outline-2
+              focus-visible:outline-offset-4
+            "
+            style={{
+              color: C.brand,
+              borderColor: C.brand,
+              outlineColor: C.brand,
+            }}
+          >
+            Conoce cómo donar
+
+            <IconArrowUpRight
+              size={17}
+              stroke={1.8}
+              aria-hidden="true"
+              className="
+                transition-transform
+                duration-200
+                group-hover:translate-x-0.5
+                group-hover:-translate-y-0.5
+                motion-reduce:transform-none
+              "
+            />
+          </a>
+        </motion.div>
       </div>
     </section>
   );

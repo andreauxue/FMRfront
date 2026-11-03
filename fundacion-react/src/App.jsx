@@ -8,6 +8,7 @@ import Causas from "./components/sections/Causas";
 import Embajadores from "./components/sections/Embajadores";
 import Alianzas from "./components/sections/Alianzas";
 import Donaciones from "./components/sections/donar";
+import Directorio from "./components/sections/Directorio";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
       <Route path="/alianzas" element={<Alianzas />} />
       <Route path="/donar" element={<Donaciones />} />
       <Route path="/vivo-con-leucemia" element={<Home />} />
+      <Route path="/directorio" element={<Directorio />} />
 
 
       {/* ── Rutas administrativas (nuevas) ───────────────────────────── */}

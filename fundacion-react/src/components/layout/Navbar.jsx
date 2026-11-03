@@ -1,214 +1,558 @@
+
 import { Link, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { IconHeart } from "@tabler/icons-react";
+import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+
+// ============================================================
+// COLORES
+// ============================================================
 
 const C = {
-  brand:     "#C8384F",
+  brand: "#C8384F",
   brandSoft: "#FAE8EB",
-  bg:        "#FAFAFA",
-  surface:   "#FFFFFF",
-  text:      "#1A2235",
-  textMid:   "#4B5563",
-  border:    "#E5E7EB",
+  bg: "#FAFAFA",
+  surface: "#FFFFFF",
+  text: "#1A2235",
+  textMid: "#4B5563",
+  border: "#E5E7EB",
 };
 
+const EASE = [0.22, 1, 0.36, 1];
+
+// ============================================================
+// NAVEGACIÓN
+// ============================================================
+
 const links = [
-  { to: "/",                  label: "Inicio" },
-  { to: "/acerca-de",         label: "Acerca de" },
-  { to: "/servicios",         label: "Servicios" },
-  { to: "/equipo",            label: "Equipo" },
-  { to: "/causas",            label: "Causas" },
-  { to: "/embajadores",       label: "Embajadores" },
-  { to: "/alianzas",          label: "Alianzas" },
+  { to: "/", label: "Inicio" },
+  { to: "/acerca-de", label: "Acerca de" },
+  { to: "/servicios", label: "Servicios" },
+  { to: "/equipo", label: "Equipo" },
+  { to: "/causas", label: "Causas" },
+  { to: "/embajadores", label: "Embajadores" },
+  { to: "/alianzas", label: "Alianzas" },
+  { to: "/directorio", label: "Directorio" },
 ];
+
+function isActivePath(pathname, to) {
+  if (to === "/") return pathname === "/";
+
+  return pathname === to || pathname.startsWith(`${to}/`);
+}
+
+// ============================================================
+// LOGO
+// ============================================================
+
+function NavbarLogo({ transparent }) {
+  return (
+    <Link
+      to="/"
+      aria-label="Mejoremos Realidades, ir al inicio"
+      className="
+        group relative z-10
+        flex shrink-0 items-center
+        focus-visible:outline
+        focus-visible:outline-2
+        focus-visible:outline-offset-4
+      "
+      style={{ outlineColor: C.brand }}
+    >
+      <img
+        src="/home/4.png"
+        alt="Mejoremos Realidades"
+        className="
+          block h-[52px] w-auto
+          max-w-[190px]
+          object-contain
+          transition-[filter,opacity]
+          duration-300
+          group-hover:opacity-85
+          sm:h-[58px]
+          lg:h-[62px]
+        "
+        style={{
+          filter: transparent
+            ? "brightness(0) invert(1)"
+            : "none",
+        }}
+      />
+    </Link>
+  );
+}
+
+// ============================================================
+// ENLACES DE ESCRITORIO
+// ============================================================
+
+function DesktopNavigation({ pathname, transparent }) {
+  return (
+    <div className="hidden xl:flex items-center gap-6 2xl:gap-7">
+      {links.map(({ to, label }) => {
+        const active = isActivePath(pathname, to);
+
+        return (
+          <Link
+            key={to}
+            to={to}
+            aria-current={active ? "page" : undefined}
+            className="
+              group relative
+              inline-flex h-10
+              items-center
+              whitespace-nowrap
+              text-[13px]
+              font-semibold
+              tracking-[-0.01em]
+              transition-colors
+              duration-200
+              focus-visible:outline
+              focus-visible:outline-2
+              focus-visible:outline-offset-4
+            "
+            style={{
+              color: active
+                ? transparent
+                  ? "#FFFFFF"
+                  : C.brand
+                : transparent
+                  ? "rgba(255,255,255,0.8)"
+                  : C.textMid,
+              outlineColor: C.brand,
+            }}
+          >
+            {label}
+
+            {/* Indicador inferior, sin píldoras */}
+            <span
+              aria-hidden="true"
+              className="
+                absolute bottom-[3px]
+                left-0 h-[2px]
+                transition-[width,background-color]
+                duration-300
+                group-hover:w-full
+              "
+              style={{
+                width: active ? "100%" : "0%",
+                backgroundColor: transparent
+                  ? "#FFFFFF"
+                  : C.brand,
+              }}
+            />
+          </Link>
+        );
+      })}
+
+      {/* Acción principal */}
+      <Link
+        to="/donar"
+        aria-current={
+          isActivePath(pathname, "/donar")
+            ? "page"
+            : undefined
+        }
+        className="
+          ml-2 inline-flex
+          min-h-11
+          shrink-0 items-center
+          justify-center
+          rounded-md
+          px-6
+          text-[13px]
+          font-bold
+          text-white
+          transition-colors
+          duration-200
+          hover:bg-[#A92D42]
+          focus-visible:outline
+          focus-visible:outline-2
+          focus-visible:outline-offset-4
+        "
+        style={{
+          backgroundColor: C.brand,
+          outlineColor: C.brand,
+        }}
+        onMouseEnter={(event) => {
+          event.currentTarget.style.backgroundColor = "#A92D42";
+        }}
+        onMouseLeave={(event) => {
+          event.currentTarget.style.backgroundColor = C.brand;
+        }}
+      >
+        Donar
+      </Link>
+    </div>
+  );
+}
+
+// ============================================================
+// BOTÓN DEL MENÚ MÓVIL
+// ============================================================
+
+function MobileMenuButton({ menuOpen, setMenuOpen, transparent }) {
+  return (
+    <button
+      type="button"
+      aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+      aria-expanded={menuOpen}
+      aria-controls="navbar-mobile-menu"
+      onClick={() => setMenuOpen((current) => !current)}
+      className="
+        relative z-10
+        flex h-11 w-11
+        shrink-0
+        items-center
+        justify-center
+        xl:hidden
+        focus-visible:outline
+        focus-visible:outline-2
+        focus-visible:outline-offset-2
+      "
+      style={{
+        color: transparent ? "#FFFFFF" : C.text,
+        outlineColor: C.brand,
+      }}
+    >
+      <span className="relative block h-5 w-6">
+        <span
+          className="
+            absolute left-0 top-[3px]
+            block h-[2px] w-6
+            rounded-full
+            bg-current
+            transition-transform
+            duration-300
+          "
+          style={{
+            transform: menuOpen
+              ? "translateY(6px) rotate(45deg)"
+              : "none",
+          }}
+        />
+
+        <span
+          className="
+            absolute left-0 top-[9px]
+            block h-[2px] w-6
+            rounded-full
+            bg-current
+            transition-opacity
+            duration-200
+          "
+          style={{
+            opacity: menuOpen ? 0 : 1,
+          }}
+        />
+
+        <span
+          className="
+            absolute left-0 top-[15px]
+            block h-[2px] w-6
+            rounded-full
+            bg-current
+            transition-transform
+            duration-300
+          "
+          style={{
+            transform: menuOpen
+              ? "translateY(-6px) rotate(-45deg)"
+              : "none",
+          }}
+        />
+      </span>
+    </button>
+  );
+}
+
+// ============================================================
+// MENÚ MÓVIL
+// ============================================================
+
+function MobileNavigation({
+  pathname,
+  menuOpen,
+  setMenuOpen,
+  reducedMotion,
+}) {
+  return (
+    <AnimatePresence initial={false}>
+      {menuOpen && (
+        <motion.div
+          id="navbar-mobile-menu"
+          key="mobile-menu"
+          initial={
+            reducedMotion
+              ? false
+              : { height: 0, opacity: 0 }
+          }
+          animate={{
+            height: "auto",
+            opacity: 1,
+          }}
+          exit={
+            reducedMotion
+              ? { opacity: 0, transition: { duration: 0 } }
+              : { height: 0, opacity: 0 }
+          }
+          transition={{
+            duration: reducedMotion ? 0 : 0.3,
+            ease: EASE,
+          }}
+          className="
+            overflow-hidden
+            border-t
+            xl:hidden
+          "
+          style={{
+            backgroundColor: C.surface,
+            borderColor: C.border,
+          }}
+        >
+          <div
+            className="
+              mx-auto
+              max-h-[calc(100dvh-72px)]
+              max-w-[1360px]
+              overflow-y-auto
+              px-5 py-3
+              sm:px-8
+            "
+          >
+            <div className="flex flex-col">
+              {links.map(({ to, label }) => {
+                const active = isActivePath(pathname, to);
+
+                return (
+                  <Link
+                    key={to}
+                    to={to}
+                    aria-current={active ? "page" : undefined}
+                    onClick={() => setMenuOpen(false)}
+                    className="
+                      flex min-h-[48px]
+                      items-center
+                      border-b
+                      py-3
+                      text-[14px]
+                      font-semibold
+                      transition-colors
+                      duration-200
+                      focus-visible:outline
+                      focus-visible:outline-2
+                      focus-visible:outline-offset-[-2px]
+                    "
+                    style={{
+                      color: active ? C.brand : C.text,
+                      borderColor: C.border,
+                      outlineColor: C.brand,
+                    }}
+                  >
+                    {label}
+                  </Link>
+                );
+              })}
+            </div>
+
+            <Link
+              to="/donar"
+              onClick={() => setMenuOpen(false)}
+              className="
+                mt-5 mb-3
+                flex min-h-12
+                w-full items-center
+                justify-center
+                rounded-md
+                px-6
+                text-[14px]
+                font-bold
+                text-white
+                transition-colors
+                duration-200
+                focus-visible:outline
+                focus-visible:outline-2
+                focus-visible:outline-offset-4
+              "
+              style={{
+                backgroundColor: C.brand,
+                outlineColor: C.brand,
+              }}
+            >
+              Donar ahora
+            </Link>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+// ============================================================
+// NAVBAR PRINCIPAL
+// ============================================================
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
   const { pathname } = useLocation();
+  const reducedMotion = useReducedMotion();
 
-  // ¿Estamos en el home?
+  const navRef = useRef(null);
+
   const isHome = pathname === "/";
-
-  // Navbar es "transparente" cuando: es home Y no se ha scrolleado Y el menú está cerrado
   const transparent = isHome && !scrolled && !menuOpen;
 
+  // ----------------------------------------------------------
+  // DETECTAR SCROLL
+  // ----------------------------------------------------------
+
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 60);
-    fn();
-    window.addEventListener("scroll", fn, { passive: true });
-    return () => window.removeEventListener("scroll", fn);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 40);
+    };
+
+    handleScroll();
+
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
-  useEffect(() => { setMenuOpen(false); }, [pathname]);
+  // ----------------------------------------------------------
+  // CERRAR MENÚ AL CAMBIAR DE RUTA
+  // ----------------------------------------------------------
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  // ----------------------------------------------------------
+  // CERRAR CON ESCAPE
+  // ----------------------------------------------------------
 
   useEffect(() => {
     if (!menuOpen) return;
-    const fn = (e) => { if (e.key === "Escape") setMenuOpen(false); };
-    window.addEventListener("keydown", fn);
-    return () => window.removeEventListener("keydown", fn);
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [menuOpen]);
 
-  const isActive = (to) =>
-    to === "/" ? pathname === "/" : pathname.startsWith(to);
+  // ----------------------------------------------------------
+  // CERRAR AL HACER CLIC FUERA
+  // ----------------------------------------------------------
 
-  // Colores de links según modo
-  const linkColor      = (active) => active ? (transparent ? "#fff" : C.brand) : (transparent ? "rgba(255,255,255,0.75)" : C.textMid);
-  const linkBg         = (active) => active ? (transparent ? "rgba(255,255,255,0.15)" : C.brandSoft) : "transparent";
-  const linkHoverColor = transparent ? "#fff" : C.text;
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const handleOutsideClick = (event) => {
+      if (
+        navRef.current &&
+        !navRef.current.contains(event.target)
+      ) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener(
+      "pointerdown",
+      handleOutsideClick
+    );
+
+    return () => {
+      document.removeEventListener(
+        "pointerdown",
+        handleOutsideClick
+      );
+    };
+  }, [menuOpen]);
+
+  // ----------------------------------------------------------
+  // RENDER
+  // ----------------------------------------------------------
 
   return (
     <nav
-      className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
+      ref={navRef}
+      aria-label="Navegación principal"
+      className="
+        fixed inset-x-0 top-0
+        z-50 w-full
+        border-b
+        transition-[background-color,border-color,box-shadow,backdrop-filter]
+        duration-300
+      "
       style={{
-        background: transparent
+        backgroundColor: transparent
           ? "transparent"
           : menuOpen
             ? C.surface
-            : "rgba(255,255,255,0.94)",
-        backdropFilter: transparent ? "none" : "blur(12px)",
-        WebkitBackdropFilter: transparent ? "none" : "blur(12px)",
-        borderBottom: transparent
-          ? "1px solid rgba(255,255,255,0.12)"
-          : `1px solid ${C.border}`,
-        boxShadow: transparent ? "none" : "0 1px 4px rgba(26,34,53,0.07)",
+            : "rgba(255,255,255,0.96)",
+
+        borderColor: transparent
+          ? "rgba(255,255,255,0.15)"
+          : C.border,
+
+        backdropFilter: transparent
+          ? "none"
+          : "blur(8px)",
+
+        WebkitBackdropFilter: transparent
+          ? "none"
+          : "blur(8px)",
+
+        boxShadow: "none",
       }}
     >
-      <div className="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between h-24">
-
-        {/* Logo — más grande */}
-        <Link to="/" className="flex items-center group shrink-0">
-          <img
-            src="/home/4.png"
-            alt="Mejoremos Realidades"
-            className="w-auto object-contain transition-all duration-300 group-hover:opacity-80"
-            style={{
-              height: transparent ? "72px" : "56px",
-              // Filtro blanco cuando el fondo es oscuro (hero transparente)
-              filter: transparent
-                ? "brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0,0,0,0.25))"
-                : "none",
-            }}
-          />
-        </Link>
-
-        {/* Desktop links */}
-        <div className="hidden xl:flex items-center gap-0.5">
-          {links.map((l) => {
-            const active = isActive(l.to);
-            return (
-              <Link
-                key={l.to}
-                to={l.to}
-                className="text-[11px] font-bold tracking-wider uppercase px-3 py-2 rounded-full transition-all duration-200"
-                style={{
-                  color: linkColor(active),
-                  background: linkBg(active),
-                  letterSpacing: "0.06em",
-                }}
-                onMouseEnter={(e) => {
-                  if (!active) {
-                    e.currentTarget.style.color = linkHoverColor;
-                    e.currentTarget.style.background = transparent
-                      ? "rgba(255,255,255,0.12)"
-                      : C.brandSoft;
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!active) {
-                    e.currentTarget.style.color = linkColor(false);
-                    e.currentTarget.style.background = "transparent";
-                  }
-                }}
-              >
-                {l.label}
-              </Link>
-            );
-          })}
-
-          {/* Botón Donar */}
-          <Link
-            to="/donar"
-            className="ml-4 inline-flex items-center gap-1.5 text-[11px] tracking-wider uppercase font-bold px-5 py-3 rounded-full transition-all duration-200 hover:-translate-y-0.5"
-            style={{
-              background: transparent ? C.brand : C.brand,
-              color: "#fff",
-              boxShadow: transparent
-                ? "0 4px 16px rgba(200,56,79,0.45)"
-                : "0 2px 8px rgba(200,56,79,0.3)",
-            }}
-          >
-            <IconHeart size={14} stroke={2.5} />
-            Donar
-          </Link>
-        </div>
-
-        {/* Mobile toggle */}
-        <button
-          className="xl:hidden flex flex-col justify-center gap-[5px] p-2 -mr-1"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
-          aria-expanded={menuOpen}
-        >
-          {[0, 1, 2].map((i) => (
-            <span
-              key={i}
-              className="block w-6 h-[2px] rounded-full transition-all duration-300"
-              style={{
-                background: transparent ? "#fff" : C.text,
-                transform:
-                  menuOpen
-                    ? i === 0 ? "rotate(45deg) translateY(7px)"
-                    : i === 1 ? "scaleX(0)"
-                    : "rotate(-45deg) translateY(-7px)"
-                    : "none",
-                opacity: menuOpen && i === 1 ? 0 : 1,
-              }}
-            />
-          ))}
-        </button>
-      </div>
-
-      {/* Mobile menu */}
+      {/* Barra principal */}
       <div
-        className={`xl:hidden overflow-hidden transition-all duration-300 ${
-          menuOpen ? "max-h-[36rem] opacity-100" : "max-h-0 opacity-0"
-        }`}
-        style={{
-          background: C.surface,
-          borderTop: menuOpen ? `1px solid ${C.border}` : "none",
-        }}
+        className="
+          mx-auto flex
+          h-[72px] w-full
+          max-w-[1360px]
+          items-center
+          justify-between
+          px-5
+          sm:px-8
+          lg:h-[80px]
+          lg:px-12
+          xl:px-16
+        "
       >
-        <div className="px-6 py-6 flex flex-col gap-1">
-          {links.map((l) => {
-            const active = isActive(l.to);
-            return (
-              <Link
-                key={l.to}
-                to={l.to}
-                onClick={() => setMenuOpen(false)}
-                className="text-sm font-semibold tracking-wide uppercase px-4 py-3 rounded-xl transition-colors"
-                style={{
-                  color: active ? C.brand : C.text,
-                  background: active ? C.brandSoft : "transparent",
-                }}
-              >
-                {l.label}
-              </Link>
-            );
-          })}
+        <NavbarLogo transparent={transparent} />
 
-          <Link
-            to="/donar"
-            onClick={() => setMenuOpen(false)}
-            className="mt-4 inline-flex items-center justify-center gap-2 text-sm tracking-wide uppercase font-bold px-5 py-3.5 rounded-full shadow-md"
-            style={{ background: C.brand, color: "#fff" }}
-          >
-            <IconHeart size={16} stroke={2.25} />
-            Donar ahora
-          </Link>
-        </div>
+        <DesktopNavigation
+          pathname={pathname}
+          transparent={transparent}
+        />
+
+        <MobileMenuButton
+          menuOpen={menuOpen}
+          setMenuOpen={setMenuOpen}
+          transparent={transparent}
+        />
       </div>
+
+      {/* Navegación móvil */}
+      <MobileNavigation
+        pathname={pathname}
+        menuOpen={menuOpen}
+        setMenuOpen={setMenuOpen}
+        reducedMotion={reducedMotion}
+      />
     </nav>
   );
 }

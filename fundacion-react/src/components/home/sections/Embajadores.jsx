@@ -1,56 +1,273 @@
-import { IconHeart, IconArrowRight } from "@tabler/icons-react";
+
+import { motion, useReducedMotion } from "framer-motion";
+
 import { C, AMBASSADORS } from "../../../data/homeData";
-import useScrollReveal from "../../../hooks/useScrollReveal";
 import { SectionLabel, GhostBtn } from "../ui";
 
-export default function Embajadores() {
-  const [ref, visible] = useScrollReveal();
-  const ambassador = AMBASSADORS[0];
+// ============================================================
+// CONFIGURACIÓN DE ANIMACIONES
+// ============================================================
+
+const EASE = [0.22, 1, 0.36, 1];
+
+const VIEWPORT = {
+  once: true,
+  amount: 0.12,
+};
+
+const fadeUp = {
+  hidden: {
+    opacity: 0,
+    y: 16,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+  },
+};
+
+const fadeIn = {
+  hidden: {
+    opacity: 0,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+  },
+};
+
+function revealProps(reducedMotion, delay = 0) {
+  if (reducedMotion) {
+    return {
+      initial: false,
+    };
+  }
+
+  return {
+    initial: "hidden",
+    whileInView: "visible",
+    viewport: VIEWPORT,
+    transition: {
+      duration: 0.65,
+      delay,
+      ease: EASE,
+    },
+  };
+}
+
+// ============================================================
+// FOTOGRAFÍA DEL EMBAJADOR
+// ============================================================
+
+function AmbassadorImage({ ambassador, reducedMotion }) {
+  if (!ambassador) return null;
 
   return (
-    <section ref={ref} style={{ background: C.bg }} className="py-28 px-8 sm:px-14 lg:px-20">
-      <div className="max-w-7xl grid md:grid-cols-2 gap-16 items-center">
+    <motion.div
+      variants={fadeUp}
+      {...revealProps(reducedMotion, 0.12)}
+      className="relative w-full min-w-0"
+    >
+      <div
+        className="
+          group relative
+          h-[400px] w-full
+          overflow-hidden
+          rounded-xl
+          bg-[#F2E9EB]
+          sm:h-[480px]
+          md:h-[540px]
+          lg:h-[580px]
+          xl:h-[620px]
+        "
+      >
+        <motion.img
+          src={ambassador.img}
+          alt={ambassador.name || "Embajador de Mejoremos Realidades"}
+          loading="lazy"
+          decoding="async"
+          className="
+            absolute inset-0
+            block h-full w-full
+            object-cover object-top
+          "
+          whileHover={
+            reducedMotion
+              ? undefined
+              : {
+                  scale: 1.035,
+                  transition: {
+                    duration: 0.8,
+                    ease: EASE,
+                  },
+                }
+          }
+        />
+      </div>
 
+      {/* Identificación editorial debajo de la imagen */}
+      {ambassador.name && (
+        <div className="mt-3 flex items-baseline justify-between gap-4">
+          <p
+            className="
+              m-0 text-[14px]
+              font-semibold
+              tracking-[-0.01em]
+            "
+            style={{ color: C.text }}
+          >
+            {ambassador.name}
+          </p>
+
+          <span
+            className="
+              shrink-0 text-[11px]
+              font-semibold uppercase
+              tracking-[0.12em]
+            "
+            style={{ color: C.brand }}
+          >
+            Embajador
+          </span>
+        </div>
+      )}
+    </motion.div>
+  );
+}
+
+// ============================================================
+// CONTENIDO
+// ============================================================
+
+function AmbassadorContent({ reducedMotion }) {
+  return (
+    <div className="min-w-0">
+      {/* Etiqueta */}
+      <motion.div
+        variants={fadeIn}
+        {...revealProps(reducedMotion, 0.05)}
+        className="mb-3"
+      >
+        <SectionLabel>
+          Héroe contra la leucemia
+        </SectionLabel>
+      </motion.div>
+
+      {/* Título */}
+      <motion.h2
+        id="embajadores-title"
+        variants={fadeUp}
+        {...revealProps(reducedMotion, 0.1)}
+        className="
+          mb-5
+          max-w-[610px]
+          text-[clamp(2rem,3.5vw,3.2rem)]
+          font-extrabold
+          leading-[1.12]
+          tracking-[-0.045em]
+        "
+        style={{ color: C.text }}
+      >
+        Nuestros{" "}
+        <span style={{ color: C.brand }}>
+          embajadores.
+        </span>
+      </motion.h2>
+
+      {/* Primer párrafo */}
+      <motion.p
+        variants={fadeUp}
+        {...revealProps(reducedMotion, 0.18)}
+        className="
+          mb-4 max-w-[560px]
+          text-[14px]
+          leading-[1.8]
+          sm:text-[15px]
+        "
+        style={{ color: C.textMid }}
+      >
+        Contamos con el respaldo de figuras comprometidas
+        con nuestra causa, que contribuyen a visibilizar
+        la realidad de los pacientes con leucemia en México
+        y a amplificar el alcance de nuestra misión.
+      </motion.p>
+
+      {/* Segundo párrafo */}
+      <motion.p
+        variants={fadeUp}
+        {...revealProps(reducedMotion, 0.25)}
+        className="
+          mb-6 max-w-[560px]
+          text-[14px]
+          leading-[1.8]
+          sm:text-[15px]
+        "
+        style={{ color: C.textMid }}
+      >
+        Su participación nos permite llegar a más personas,
+        generar alianzas y construir una comunidad de apoyo
+        más sólida para quienes más lo necesitan.
+      </motion.p>
+
+      {/* Botón */}
+      <motion.div
+        variants={fadeUp}
+        {...revealProps(reducedMotion, 0.32)}
+        className="flex items-center"
+      >
+        <GhostBtn to="/embajadores">
+          Conoce más
+        </GhostBtn>
+      </motion.div>
+    </div>
+  );
+}
+
+// ============================================================
+// SECCIÓN PRINCIPAL
+// ============================================================
+
+export default function Embajadores() {
+  const reducedMotion = useReducedMotion();
+  const ambassador = AMBASSADORS?.[0];
+
+  return (
+    <section
+      id="embajadores"
+      aria-labelledby="embajadores-title"
+      className="
+        relative w-full
+        px-5 py-12
+        sm:px-8 sm:py-14
+        lg:px-12 lg:py-16
+        xl:px-16
+        2xl:px-20
+      "
+      style={{
+        backgroundColor: C.bg,
+      }}
+    >
+      <div
+        className="
+          mx-auto grid
+          w-full max-w-[1360px]
+          grid-cols-1
+          items-center
+          gap-8
+          md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]
+          md:gap-9
+          lg:gap-12
+          xl:gap-14
+        "
+      >
         {/* Texto */}
-        <div className={`transition-all duration-1000
-          ${visible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-10"}`}>
-          <SectionLabel>Héroe contra la leucemia</SectionLabel>
-          <h2 className="font-black leading-tight mb-6"
-            style={{ fontSize: "clamp(2rem,3.5vw,3rem)", color: C.text, letterSpacing: "-0.025em" }}>
-            Nuestros <span style={{ color: C.brand }}>embajadores</span>
-          </h2>
-          <p className="leading-relaxed mb-5 text-base" style={{ color: C.textMid }}>
-            Contamos con el respaldo de figuras comprometidas con nuestra causa, que
-            contribuyen a visibilizar la realidad de los pacientes con leucemia en México
-            y a amplificar el alcance de nuestra misión.
-          </p>
-          <p className="leading-relaxed mb-8 text-base" style={{ color: C.textMid }}>
-            Su participación nos permite llegar a más personas, generar alianzas y
-            construir una comunidad de apoyo más sólida para quienes más lo necesitan.
-          </p>
-          <GhostBtn to="/embajadores">
-            Conoce más <IconArrowRight size={16} stroke={2.25} />
-          </GhostBtn>
-        </div>
+        <AmbassadorContent reducedMotion={reducedMotion} />
 
-        {/* Foto protagonista */}
-        <div className={`transition-all duration-1000 delay-200
-          ${visible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10"}`}>
-          <div className="relative group">
-            <img src={ambassador.img} alt="Embajador Mejoremos Realidades"
-              className="w-full h-[480px] object-cover object-top rounded-3xl shadow-lg
-                         group-hover:scale-[1.02] transition-transform duration-700" />
-            <div className="absolute bottom-6 left-6 rounded-2xl px-5 py-3 flex items-center gap-3"
-              style={{ background: C.brand }}>
-              <IconHeart size={18} stroke={2} style={{ color: "#fff", flexShrink: 0 }} />
-              <div className="text-xs font-semibold uppercase tracking-widest"
-                style={{ color: "rgba(255,255,255,0.75)" }}>
-                Embajador
-              </div>
-            </div>
-          </div>
-        </div>
-
+        {/* Fotografía protagonista */}
+        <AmbassadorImage
+          ambassador={ambassador}
+          reducedMotion={reducedMotion}
+        />
       </div>
     </section>
   );

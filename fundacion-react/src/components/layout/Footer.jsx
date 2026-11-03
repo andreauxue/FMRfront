@@ -1,140 +1,313 @@
+
 import { Link } from "react-router-dom";
 import {
-  IconHeart,
-  IconHeartHandshake,
   IconBrandFacebook,
   IconBrandInstagram,
   IconBrandLinkedin,
   IconMail,
 } from "@tabler/icons-react";
 
-const C = {
-  brand:     "#C8384F",
-  brandSoft: "#FAE8EB",
-  bg:        "#FAFAFA",
-  surface:   "#FFFFFF",
-  text:      "#1A2235",
-  textMid:   "#4B5563",
-  textLight: "#9CA3AF",
-  border:    "#E5E7EB",
-};
+import { C } from "../../data/homeData";
+
+// ============================================================
+// NAVEGACIÓN
+// ============================================================
 
 const NAV = [
-  { to: "/servicios",         label: "Servicios" },
-  { to: "/equipo",            label: "Equipo" },
-  { to: "/embajadores",       label: "Embajadores" },
+  { to: "/acerca-de", label: "Acerca de" },
+  { to: "/servicios", label: "Servicios" },
+  { to: "/equipo", label: "Equipo" },
+  { to: "/embajadores", label: "Embajadores" },
+  { to: "/alianzas", label: "Alianzas" },
   { to: "/vivo-con-leucemia", label: "Vivo con leucemia" },
-  { to: "/donar",             label: "Donar" },
 ];
+
+// ============================================================
+// REDES SOCIALES
+// ============================================================
 
 const SOCIAL = [
-  { href: "https://www.facebook.com/110183845151250",         icon: IconBrandFacebook,  label: "Facebook" },
-  { href: "https://www.instagram.com/fmejoremosrealidades",   icon: IconBrandInstagram, label: "Instagram" },
-  { href: "https://www.linkedin.com/in/mejoremos-realidades-a-c-088026427/", icon: IconBrandLinkedin, label: "LinkedIn" },
+  {
+    href: "https://www.facebook.com/110183845151250",
+    icon: IconBrandFacebook,
+    label: "Facebook",
+  },
+  {
+    href: "https://www.instagram.com/fmejoremosrealidades",
+    icon: IconBrandInstagram,
+    label: "Instagram",
+  },
+  {
+    href: "https://www.linkedin.com/in/mejoremos-realidades-a-c-088026427/",
+    icon: IconBrandLinkedin,
+    label: "LinkedIn",
+  },
 ];
 
-function SocialIcon({ href, icon: Icon, label }) {
+// ============================================================
+// MARCA
+// ============================================================
+
+function FooterBrand() {
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-      aria-label={label}
-      className="inline-flex items-center justify-center rounded-full transition-all duration-200 hover:-translate-y-0.5"
-      style={{ width: 40, height: 40, border: `1.5px solid ${C.border}`, color: C.textMid }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.background = C.brand;
-        e.currentTarget.style.borderColor = C.brand;
-        e.currentTarget.style.color = "#fff";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.background = "transparent";
-        e.currentTarget.style.borderColor = C.border;
-        e.currentTarget.style.color = C.textMid;
-      }}
-    >
-      <Icon size={18} stroke={1.75} />
-    </a>
+    <div className="min-w-0">
+      <Link
+        to="/"
+        aria-label="Mejoremos Realidades, ir al inicio"
+        className="
+          inline-flex items-center
+          transition-opacity duration-200
+          hover:opacity-80
+          focus-visible:outline
+          focus-visible:outline-2
+          focus-visible:outline-offset-4
+        "
+        style={{ outlineColor: C.brand }}
+      >
+        <img
+          src="/home/4.png"
+          alt="Mejoremos Realidades"
+          loading="lazy"
+          decoding="async"
+          className="
+            block h-[64px] w-auto
+            max-w-[220px]
+            object-contain
+            sm:h-[72px]
+          "
+        />
+      </Link>
+
+      <p
+        className="
+          mb-0 mt-3
+          max-w-[340px]
+          text-[13px]
+          leading-[1.75]
+          sm:text-[14px]
+        "
+        style={{ color: C.textMid }}
+      >
+        Acompañamos a pacientes con leucemia y cáncer
+        en México mediante atención médica, asesoría
+        jurídica y apoyo emocional.
+      </p>
+    </div>
   );
 }
+
+// ============================================================
+// ENLACES
+// ============================================================
+
+function FooterNavigation() {
+  return (
+    <nav
+      aria-label="Navegación del pie de página"
+      className="min-w-0"
+    >
+      <h2
+        className="
+          mb-4 text-[13px]
+          font-bold
+          tracking-[-0.01em]
+        "
+        style={{ color: C.text }}
+      >
+        Explora
+      </h2>
+
+      <div
+        className="
+          grid grid-cols-2
+          gap-x-7 gap-y-3
+        "
+      >
+        {NAV.map(({ to, label }) => (
+          <Link
+            key={to}
+            to={to}
+            className="
+              w-fit text-[13px]
+              leading-[1.5]
+              transition-colors duration-200
+              hover:text-[#C8384F]
+              focus-visible:outline
+              focus-visible:outline-2
+              focus-visible:outline-offset-4
+            "
+            style={{
+              color: C.textMid,
+              outlineColor: C.brand,
+            }}
+          >
+            {label}
+          </Link>
+        ))}
+      </div>
+    </nav>
+  );
+}
+
+// ============================================================
+// CONTACTO Y REDES
+// ============================================================
+
+function FooterContact() {
+  return (
+    <div className="min-w-0">
+      <h2
+        className="
+          mb-4 text-[13px]
+          font-bold
+          tracking-[-0.01em]
+        "
+        style={{ color: C.text }}
+      >
+        Contacto
+      </h2>
+
+      <a
+        href="mailto:mejoremosrealidadesfundacion@gmail.com"
+        className="
+          inline-flex max-w-full
+          items-start gap-2
+          text-[13px]
+          leading-[1.6]
+          transition-colors duration-200
+          hover:text-[#C8384F]
+          focus-visible:outline
+          focus-visible:outline-2
+          focus-visible:outline-offset-4
+        "
+        style={{
+          color: C.textMid,
+          outlineColor: C.brand,
+          overflowWrap: "anywhere",
+        }}
+      >
+        <IconMail
+          size={17}
+          stroke={1.75}
+          className="mt-0.5 shrink-0"
+          aria-hidden="true"
+        />
+
+        mejoremosrealidadesfundacion@gmail.com
+      </a>
+
+      <div className="mt-5 flex items-center gap-5">
+        {SOCIAL.map(({ href, icon: Icon, label }) => (
+          <a
+            key={label}
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={label}
+            title={label}
+            className="
+              inline-flex h-9 w-9
+              items-center justify-center
+              transition-colors duration-200
+              hover:text-[#C8384F]
+              focus-visible:outline
+              focus-visible:outline-2
+              focus-visible:outline-offset-2
+            "
+            style={{
+              color: C.textMid,
+              outlineColor: C.brand,
+            }}
+          >
+            <Icon
+              size={21}
+              stroke={1.7}
+              aria-hidden="true"
+            />
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// FOOTER PRINCIPAL
+// ============================================================
 
 export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer style={{ background: C.surface, borderTop: `1px solid ${C.border}` }}>
+    <footer
+      className="w-full border-t"
+      style={{
+        backgroundColor: C.surface,
+        borderColor: C.border,
+      }}
+    >
+      <div
+        className="
+          mx-auto w-full
+          max-w-[1360px]
+          px-5 pt-10 pb-5
+          sm:px-8 sm:pt-12
+          lg:px-12 lg:pt-14
+          xl:px-16
+          2xl:px-20
+        "
+      >
+        {/* Contenido principal */}
+        <div
+          className="
+            grid grid-cols-1
+            gap-9
+            sm:grid-cols-2
+            lg:grid-cols-[1.25fr_1fr_1fr]
+            lg:gap-12
+          "
+        >
+          <FooterBrand />
 
-      {/* Acento de marca */}
-      <div className="h-1 w-full" style={{
-        background: `linear-gradient(90deg, ${C.brand} 0%, ${C.brandSoft} 60%, transparent 100%)`,
-      }} />
+          <FooterNavigation />
 
-      {/* Cuerpo principal */}
-      <div className="max-w-7xl mx-auto px-8 sm:px-14 lg:px-20 py-14">
-
-        {/* Fila superior — marca + nav + cta */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10 mb-10 pb-10"
-          style={{ borderBottom: `1px solid ${C.border}` }}>
-
-          {/* Marca */}
-          <div className="flex items-center gap-3 shrink-0">
-            <span className="inline-flex items-center justify-center rounded-2xl"
-              style={{ width: 42, height: 42, background: C.brandSoft, color: C.brand }}>
-              <IconHeartHandshake size={22} stroke={1.75} />
-            </span>
-            <div className="leading-tight">
-              <div className="text-[10px] font-bold tracking-[0.28em] uppercase" style={{ color: C.textLight }}>
-                Fundación
-              </div>
-              <div className="font-bold text-base" style={{ color: C.text }}>
-                Mejoremos <span style={{ color: C.brand }}>Realidades</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Nav links */}
-          <nav className="flex flex-wrap gap-x-7 gap-y-2">
-            {NAV.map((l) => (
-              <Link key={l.to} to={l.to}
-                className="text-sm font-medium transition-colors duration-150"
-                style={{ color: C.textMid }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = C.brand)}
-                onMouseLeave={(e) => (e.currentTarget.style.color = C.textMid)}>
-                {l.label}
-              </Link>
-            ))}
-          </nav>
-
-          {/* CTA */}
-          <Link to="/donar"
-            className="inline-flex items-center gap-2 font-bold text-sm px-6 py-3 rounded-full
-                       transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md shrink-0"
-            style={{ background: C.brand, color: "#fff" }}>
-            <IconHeart size={16} stroke={2} /> Dona ahora
-          </Link>
+          <FooterContact />
         </div>
 
-        {/* Fila inferior — contacto + redes + copyright */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-
-          {/* Email */}
-          <a href="mailto:mejoremosrealidadesfundacion@gmail.com"
-            className="inline-flex items-center gap-2 text-sm transition-colors duration-150"
+        {/* Línea inferior */}
+        <div
+          className="
+            mt-9 flex
+            flex-col gap-2
+            border-t pt-5
+            sm:mt-10
+            sm:flex-row
+            sm:items-center
+            sm:justify-between
+          "
+          style={{
+            borderColor: C.border,
+          }}
+        >
+          <p
+            className="
+              m-0 text-[12px]
+              leading-[1.6]
+            "
             style={{ color: C.textMid }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = C.brand)}
-            onMouseLeave={(e) => (e.currentTarget.style.color = C.textMid)}>
-            <IconMail size={15} stroke={1.75} />
-            mejoremosrealidadesfundacion@gmail.com
-          </a>
+          >
+            © {year} Mejoremos Realidades A.C.
+            Todos los derechos reservados.
+          </p>
 
-          {/* Redes */}
-          <div className="flex items-center gap-2">
-            {SOCIAL.map((s) => <SocialIcon key={s.label} {...s} />)}
-          </div>
-
-          {/* Copyright */}
-          <p className="text-xs" style={{ color: C.textLight }}>
-            &copy; {year} Mejoremos Realidades A.C.
+          <p
+            className="
+              m-0 text-[12px]
+              leading-[1.6]
+            "
+            style={{ color: C.textMid }}
+          >
+            México
           </p>
         </div>
       </div>

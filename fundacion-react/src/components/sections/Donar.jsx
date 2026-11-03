@@ -1,37 +1,42 @@
-// src/public/pages/donar/Donar.jsx
-//
-// Orden de secciones:
-//   1. Hero
-//   2. MedicamentosStock   ← subido arriba según indicación
-//   3. PorQueDona
-//   4. DonacionesEspecie
-//   5. ManosTransforman
-//   6. TransferenciaProximamente
-//   7. CtaBanner
+import Navbar from "../layout/Navbar";
+import Footer from "../layout/Footer";
 
-import Navbar  from "../../layout/Navbar";
-import Footer  from "../../layout/Footer";
-import { C }   from "./tokens";
+import { C } from "../donar/tokens";
 
-import DonarHero                            from "./DonarHero";
-import MedicamentosStock                    from "./MedicamentosStock";
-import PorQueDona                           from "./PorQueDona";
-import DonacionesEspecie                    from "./DonacionesEspecie";
-import ManosTransforman                     from "./ManosTransforman";
-import { TransferenciaProximamente, CtaBanner } from "./TransferenciaYCta";
+import DonarHero from "../donar/DonarHero";
+import MedicamentosStock from "../medicamentos/MedicamentosStock";
+import PorQueDona from "../donar/PorQueDona";
+import DonacionesEspecie from "../donar/DonacionesEspecie";
+import ManosTransforman from "../donar/ManosTransforman";
+
+import {
+  TransferenciaProximamente,
+  CtaBanner,
+} from "../donar/TransferenciaYCta";
 
 export default function Donar() {
   return (
-    <div style={{ minHeight: "100vh", fontFamily: "sans-serif", background: C.bg }}>
+    <div
+      className="min-h-screen font-sans"
+      style={{ backgroundColor: C.bg }}
+    >
       <Navbar />
 
-      <DonarHero />
-      <MedicamentosStock />
-      <PorQueDona />
-      <DonacionesEspecie />
-      <ManosTransforman />
-      <TransferenciaProximamente />
-      <CtaBanner />
+      <main id="contenido-principal">
+        <DonarHero />
+
+        <MedicamentosStock />
+
+        <PorQueDona />
+
+        <DonacionesEspecie />
+
+        <ManosTransforman />
+
+        <TransferenciaProximamente />
+
+        <CtaBanner />
+      </main>
 
       <Footer />
     </div>

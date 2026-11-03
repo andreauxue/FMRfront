@@ -1,224 +1,452 @@
+
 import { Link } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import {
+  motion,
+  useReducedMotion,
+} from "framer-motion";
+
 import Navbar from "../layout/Navbar";
 import Footer from "../layout/Footer";
-import {
-  IconHeart,
-  IconScale,
-  IconPill,
-  IconHeartHandshake,
-  IconArrowRight,
-  IconCalendar,
-  IconShieldCheck,
-  IconWorld,
-} from "@tabler/icons-react";
 
-// ─── Paleta ────────────────────────────────────────────────────────────────────
+// ============================================================
+// PALETA
+// ============================================================
+
 const C = {
-  brand:     "#C8384F",
+  brand: "#C8384F",
   brandSoft: "#FAE8EB",
-  secondary: "#3B5BA5",
-  accent:    "#F5A623",
-  bg:        "#F7F8FA",
-  surface:   "#FFFFFF",
-  text:      "#1A2235",
-  textMid:   "#4B5563",
-  textLight: "#9CA3AF",
-  border:    "#E5E7EB",
+  bg: "#F7F8FA",
+  surface: "#FFFFFF",
+  text: "#1A2235",
+  textMid: "#4B5563",
+  border: "#E5E7EB",
 };
 
-// ─── Reveal hook ───────────────────────────────────────────────────────────────
-function useReveal(threshold = 0.1) {
-  const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } },
-      { threshold }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return [ref, visible];
+// ============================================================
+// ANIMACIONES
+// ============================================================
+
+const EASE = [0.22, 1, 0.36, 1];
+
+const VIEWPORT = {
+  once: true,
+  amount: 0.12,
+};
+
+const fadeUp = {
+  hidden: {
+    opacity: 0,
+    y: 18,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+  },
+};
+
+const stagger = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+function reveal(reducedMotion, delay = 0) {
+  if (reducedMotion) {
+    return { initial: false };
+  }
+
+  return {
+    initial: "hidden",
+    whileInView: "visible",
+    viewport: VIEWPORT,
+    transition: {
+      duration: 0.7,
+      delay,
+      ease: EASE,
+    },
+  };
 }
 
-// ─── Section label ─────────────────────────────────────────────────────────────
+// ============================================================
+// COMPONENTES COMPARTIDOS
+// ============================================================
+
 function SectionLabel({ children, light = false }) {
   return (
-    <div className="flex items-center gap-3 mb-4">
-      <IconHeart size={15} stroke={2} style={{ color: light ? "rgba(255,255,255,0.6)" : C.brand }} />
-      <span className="text-xs font-bold tracking-widest uppercase"
-        style={{ color: light ? "rgba(255,255,255,0.65)" : C.brand }}>
-        {children}
-      </span>
-    </div>
+    <p
+      className="
+        mb-3 text-[11px]
+        font-bold uppercase
+        tracking-[0.14em]
+      "
+      style={{
+        color: light
+          ? "rgba(255,255,255,0.7)"
+          : C.brand,
+      }}
+    >
+      {children}
+    </p>
   );
 }
 
-// ─── Hero — editorial, imagen de fondo, sin número protagonista ───────────────
-function Hero() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { const t = setTimeout(() => setMounted(true), 80); return () => clearTimeout(t); }, []);
+function SectionHeading({
+  children,
+  light = false,
+  id,
+}) {
+  return (
+    <h2
+      id={id}
+      className="
+        text-[clamp(2rem,3.6vw,3.25rem)]
+        font-extrabold
+        leading-[1.12]
+        tracking-[-0.045em]
+      "
+      style={{
+        color: light ? "#FFFFFF" : C.text,
+      }}
+    >
+      {children}
+    </h2>
+  );
+}
 
-  const rise = (delay = 0) => ({
-    transition: `opacity .9s cubic-bezier(.16,1,.3,1) ${delay}ms, transform .9s cubic-bezier(.16,1,.3,1) ${delay}ms`,
-    opacity: mounted ? 1 : 0,
-    transform: mounted ? "translateY(0)" : "translateY(24px)",
-  });
+// ============================================================
+// HERO
+// ============================================================
+
+function Hero() {
+  const reducedMotion = useReducedMotion();
 
   return (
-    <section className="relative flex items-end overflow-hidden"
-      style={{ minHeight: "85vh" }}>
+    <section
+      aria-labelledby="about-hero-title"
+      className="
+        relative flex
+        min-h-[640px]
+        items-end
+        overflow-hidden
+        sm:min-h-[680px]
+        lg:min-h-[740px]
+      "
+      style={{ backgroundColor: C.text }}
+    >
+      {/* Fotografía */}
+      <motion.div
+        initial={
+          reducedMotion
+            ? false
+            : { scale: 1.035 }
+        }
+        animate={{ scale: 1 }}
+        transition={{
+          duration: reducedMotion ? 0 : 1.6,
+          ease: EASE,
+        }}
+        className="absolute inset-0"
+        style={{
+          backgroundImage:
+            "url('/acerca/esperanza1.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center 30%",
+        }}
+      />
 
-      {/* Imagen de fondo — foto del Esperanza Fest o equipo */}
-      <div className="absolute inset-0" style={{
-        backgroundImage: "url('/acerca/esperanza1.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center 30%",
-      }} />
+      {/* Oscurecimiento para legibilidad */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(10,14,30,0.28) 0%, rgba(10,14,30,0.48) 45%, rgba(10,14,30,0.9) 100%)",
+        }}
+      />
 
-      {/* Overlay degradado fuerte abajo, suave arriba */}
-      <div className="absolute inset-0" style={{
-        background: "linear-gradient(to bottom, rgba(10,14,30,0.3) 0%, rgba(10,14,30,0.55) 40%, rgba(10,14,30,0.92) 100%)",
-      }} />
+      {/* Contenido */}
+      <div
+        className="
+          relative z-10
+          mx-auto w-full
+          max-w-[1360px]
+          px-5 pb-14 pt-32
+          sm:px-8 sm:pb-16
+          lg:px-12 lg:pb-20
+          xl:px-16
+          2xl:px-20
+        "
+      >
+        <motion.div
+          variants={
+            reducedMotion ? undefined : stagger
+          }
+          initial={reducedMotion ? false : "hidden"}
+          animate="visible"
+          className="max-w-[850px]"
+        >
+          <motion.div variants={fadeUp}>
+            <SectionLabel light>
+              Nuestra historia
+            </SectionLabel>
+          </motion.div>
 
-      {/* Acento rojo ambiental izquierda */}
-      <div className="absolute bottom-0 left-0 pointer-events-none" style={{
-        width: "36rem", height: "36rem",
-        background: `radial-gradient(circle at 0% 100%, ${C.brand}30 0%, transparent 55%)`,
-      }} />
-
-      {/* Contenido — alineado abajo izquierda */}
-      <div className="relative z-10 w-full px-8 sm:px-14 lg:px-20 pb-24 pt-40">
-        <div className="max-w-7xl">
-
-          <div style={rise(0)}>
-            <SectionLabel light>Nuestra historia</SectionLabel>
-          </div>
-
-          <h1 className="font-black leading-none mb-6"
-            style={{
-              ...rise(120),
-              fontSize: "clamp(2.8rem, 7vw, 6.5rem)",
-              color: "#fff",
-              letterSpacing: "-0.03em",
-              maxWidth: "820px",
-            }}>
-            Una historia de{" "}
-            <span style={{ color: C.brand }}>dolor</span>{" "}
+          <motion.h1
+            id="about-hero-title"
+            variants={fadeUp}
+            className="
+              mb-5
+              text-[clamp(2.7rem,6.4vw,5.8rem)]
+              font-extrabold
+              leading-[1.03]
+              tracking-[-0.055em]
+              text-white
+            "
+          >
+            Una historia de dolor
             que se convirtió en{" "}
-            <span style={{ color: C.brand }}>propósito</span>
-          </h1>
+            <span className="text-[#F08B9A]">
+              propósito.
+            </span>
+          </motion.h1>
 
-          <p className="text-base leading-relaxed mb-10 max-w-xl"
-            style={{ ...rise(240), color: "rgba(255,255,255,0.72)" }}>
-            Nació de una experiencia personal, de un sueño y de una necesidad.
-            Hoy somos el espacio de apoyo, esperanza y acompañamiento que alguna vez faltó.
-          </p>
+          <motion.p
+            variants={fadeUp}
+            className="
+              mb-6 max-w-[590px]
+              text-[15px]
+              leading-[1.8]
+              text-white/80
+              sm:text-[17px]
+            "
+          >
+            Nació de una experiencia personal,
+            de un sueño y de una necesidad.
+            Hoy somos el espacio de apoyo,
+            esperanza y acompañamiento
+            que alguna vez faltó.
+          </motion.p>
 
-          {/* Cita inline — editorial */}
-          <div className="max-w-lg pl-6 mb-10"
-            style={{ ...rise(320), borderLeft: `3px solid ${C.brand}` }}>
-            <p className="text-lg font-semibold italic leading-relaxed"
-              style={{ color: "rgba(255,255,255,0.85)" }}>
-              "Nadie debería enfrentar un diagnóstico de leucemia solo.
-              Nosotros existimos para que eso no ocurra."
-            </p>
-            <div className="mt-3 text-xs font-bold tracking-widest uppercase"
-              style={{ color: C.brand }}>
+          <motion.div
+            variants={fadeUp}
+            className="
+              mb-7 max-w-[580px]
+              border-l-2
+              pl-5
+            "
+            style={{ borderColor: C.brand }}
+          >
+            <blockquote
+              className="
+                text-[15px]
+                font-medium italic
+                leading-[1.7]
+                text-white/90
+                sm:text-[17px]
+              "
+            >
+              “Nadie debería enfrentar un diagnóstico
+              de leucemia solo. Nosotros existimos
+              para que eso no ocurra.”
+            </blockquote>
+
+            <p
+              className="
+                mt-3 text-[12px]
+                font-semibold
+                text-white/65
+              "
+            >
               Marco Sanchez · Presidente
-            </div>
-          </div>
+            </p>
+          </motion.div>
 
-          <div style={rise(400)}>
-            <Link to="/donar"
-              className="inline-flex items-center gap-2 font-bold text-sm px-8 py-4 rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
-              style={{ background: C.brand, color: "#fff" }}>
-              <IconHeart size={16} stroke={2} /> Apoya la causa
+          <motion.div variants={fadeUp}>
+            <Link
+              to="/donar"
+              className="
+                inline-flex min-h-12
+                items-center justify-center
+                rounded-md px-7
+                text-[14px] font-bold
+                text-white
+                transition-colors
+                hover:bg-[#A92D42]
+              "
+              style={{
+                backgroundColor: C.brand,
+              }}
+            >
+              Apoya la causa
             </Link>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
 }
 
-// ─── Misión / tres pilares ─────────────────────────────────────────────────────
+// ============================================================
+// MISIÓN
+// ============================================================
+
 const PILLARS = [
   {
-    icon: IconPill,
+    number: "01",
     title: "Gestión Médica",
-    body: "Orientación especializada y acceso a medicamentos para que cada paciente reciba el tratamiento que merece.",
+    body:
+      "Orientación especializada y acceso a medicamentos para que cada paciente reciba el tratamiento que merece.",
   },
   {
-    icon: IconHeartHandshake,
+    number: "02",
     title: "Atención Psicológica",
-    body: "Apoyo individual y grupal, con costos accesibles e incluso gratuito, para el paciente y su familia.",
+    body:
+      "Apoyo individual y grupal, con costos accesibles e incluso gratuito, para el paciente y su familia.",
   },
   {
-    icon: IconScale,
+    number: "03",
     title: "Asesoría Jurídica",
-    body: "Orientación práctica para proteger los derechos de salud de cada paciente ante cualquier institución.",
+    body:
+      "Orientación práctica para proteger los derechos de salud de cada paciente ante cualquier institución.",
   },
 ];
 
 function Mission() {
-  const [ref, visible] = useReveal();
-  return (
-    <section ref={ref} style={{ background: C.surface }} className="py-28 px-8 sm:px-14 lg:px-20">
-      <div className="max-w-7xl">
-        <div className={`mb-16 transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
-          <SectionLabel>Nuestros comienzos</SectionLabel>
-          <h2 className="font-black leading-tight mb-6"
-            style={{ fontSize: "clamp(2rem, 4vw, 3rem)", color: C.text, letterSpacing: "-0.025em" }}>
-            Desde el inicio, nuestro objetivo fue{" "}
-            <span style={{ color: C.brand }}>claro</span>
-          </h2>
-          <p className="text-base leading-relaxed max-w-2xl" style={{ color: C.textMid }}>
-            Ayudar a los pacientes a vivir de la mejor manera posible durante y después del
-            cáncer. Por eso construimos una fundación sobre tres pilares fundamentales, y
-            también nos propusimos ser pioneros en la promoción de avances, la detección
-            temprana y el tratamiento de la leucemia en México.
-          </p>
-        </div>
+  const reducedMotion = useReducedMotion();
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {PILLARS.map((p, i) => (
-            <div key={p.title}
-              className={`rounded-3xl p-8 border transition-all duration-500 hover:shadow-md hover:-translate-y-1 ${
-                visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-              }`}
-              style={{ transitionDelay: `${i * 120}ms`, borderColor: C.border, background: C.bg }}>
-              <div className="inline-flex items-center justify-center rounded-2xl mb-6"
-                style={{ width: 52, height: 52, background: C.brandSoft, color: C.brand }}>
-                <p.icon size={24} stroke={1.75} />
-              </div>
-              <h3 className="font-bold text-lg mb-3" style={{ color: C.text }}>{p.title}</h3>
-              <p className="text-sm leading-relaxed" style={{ color: C.textMid }}>{p.body}</p>
-            </div>
+  return (
+    <section
+      aria-labelledby="mission-title"
+      className="
+        px-5 py-12
+        sm:px-8 sm:py-14
+        lg:px-12 lg:py-16
+        xl:px-16
+        2xl:px-20
+      "
+      style={{ backgroundColor: C.surface }}
+    >
+      <div className="mx-auto max-w-[1360px]">
+        <motion.div
+          variants={fadeUp}
+          {...reveal(reducedMotion)}
+          className="mb-8 max-w-[850px]"
+        >
+          <SectionLabel>
+            Nuestros comienzos
+          </SectionLabel>
+
+          <SectionHeading id="mission-title">
+            Desde el inicio, nuestro objetivo fue{" "}
+            <span style={{ color: C.brand }}>
+              claro.
+            </span>
+          </SectionHeading>
+
+          <p
+            className="
+              mt-4 max-w-[750px]
+              text-[15px]
+              leading-[1.8]
+            "
+            style={{ color: C.textMid }}
+          >
+            Ayudar a los pacientes a vivir de la
+            mejor manera posible durante y después
+            del cáncer. Por eso construimos una
+            fundación sobre tres pilares fundamentales,
+            y también nos propusimos ser pioneros
+            en la promoción de avances, la detección
+            temprana y el tratamiento de la leucemia
+            en México.
+          </p>
+        </motion.div>
+
+        <motion.div
+          variants={
+            reducedMotion ? undefined : stagger
+          }
+          initial={reducedMotion ? false : "hidden"}
+          whileInView="visible"
+          viewport={VIEWPORT}
+          className="
+            grid grid-cols-1
+            gap-7
+            md:grid-cols-3
+            lg:gap-10
+          "
+        >
+          {PILLARS.map((pillar) => (
+            <motion.article
+              key={pillar.number}
+              variants={fadeUp}
+              className="
+                border-t-2 pt-5
+              "
+              style={{ borderColor: C.brand }}
+            >
+              <span
+                className="
+                  mb-5 block
+                  text-[12px]
+                  font-bold
+                  tracking-[0.1em]
+                "
+                style={{ color: C.brand }}
+              >
+                {pillar.number}
+              </span>
+
+              <h3
+                className="
+                  mb-3 text-[21px]
+                  font-bold
+                  tracking-[-0.025em]
+                "
+                style={{ color: C.text }}
+              >
+                {pillar.title}
+              </h3>
+
+              <p
+                className="
+                  max-w-[390px]
+                  text-[14px]
+                  leading-[1.8]
+                  sm:text-[15px]
+                "
+                style={{ color: C.textMid }}
+              >
+                {pillar.body}
+              </p>
+            </motion.article>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
 }
 
-// ─── Línea de tiempo con imágenes ─────────────────────────────────────────────
+// ============================================================
+// CRONOLOGÍA
+// ============================================================
+
 const TIMELINE = [
   {
-    date:   "Origen",
-    icon:   IconHeart,
-    title:  "Una historia personal",
-    body:   "A los 15 años, nuestro Presidente fue diagnosticado con leucemia mieloide crónica. En medio de ese proceso, enfrentando miedos, tratamientos y la incertidumbre de cada día, se dio cuenta de algo que le dolió profundamente: en México no existían instituciones dedicadas a acompañar de manera integral a los pacientes con leucemia y otros tipos de cáncer. Así, de su propia vivencia y del deseo de hacer que otros no enfrentaran este camino solos, surgió la idea de crear un espacio de apoyo, esperanza y acompañamiento.",
+    date: "Origen",
+    title: "Una historia personal",
+    body:
+      "A los 15 años, nuestro Presidente fue diagnosticado con leucemia mieloide crónica. En medio de ese proceso, enfrentando miedos, tratamientos y la incertidumbre de cada día, se dio cuenta de algo que le dolió profundamente: en México no existían instituciones dedicadas a acompañar de manera integral a los pacientes con leucemia y otros tipos de cáncer. Así, de su propia vivencia y del deseo de hacer que otros no enfrentaran este camino solos, surgió la idea de crear un espacio de apoyo, esperanza y acompañamiento.",
     images: [],
   },
   {
-    date:   "Esperanza Fest",
-    icon:   IconCalendar,
-    title:  "Nuestro primer gran paso",
-    body:   "Nuestro primer gran paso como fundación se dio en el Esperanza Fest, un evento que marcaría un antes y un después en nuestra misión. Fue la primera vez que logramos reunir en un mismo espacio a autoridades gubernamentales, representantes de la sociedad civil, actores del sector privado y, lo más importante, a nuestros primeros embajadores: personas comprometidas con la causa de los pacientes con leucemia. Aquella jornada no solo sirvió para dar a conocer nuestra existencia, sino también para construir los primeros puentes de colaboración que hoy siguen sosteniendo nuestra labor. Entre charlas, testimonios y actividades de concientización, sentimos que nuestro sueño comenzaba a tomar forma: una red de apoyo sólida, cercana y humana que pudiera acompañar a quienes enfrentan un diagnóstico que cambia la vida, recordándoles que no están solos.",
+    date: "Esperanza Fest",
+    title: "Nuestro primer gran paso",
+    body:
+      "Nuestro primer gran paso como fundación se dio en el Esperanza Fest, un evento que marcaría un antes y un después en nuestra misión. Fue la primera vez que logramos reunir en un mismo espacio a autoridades gubernamentales, representantes de la sociedad civil, actores del sector privado y, lo más importante, a nuestros primeros embajadores: personas comprometidas con la causa de los pacientes con leucemia. Aquella jornada no solo sirvió para dar a conocer nuestra existencia, sino también para construir los primeros puentes de colaboración que hoy siguen sosteniendo nuestra labor. Entre charlas, testimonios y actividades de concientización, sentimos que nuestro sueño comenzaba a tomar forma: una red de apoyo sólida, cercana y humana que pudiera acompañar a quienes enfrentan un diagnóstico que cambia la vida, recordándoles que no están solos.",
     images: [
       "/acerca/esperanza1.jpg",
       "/acerca/esperanza2.jpg",
@@ -226,195 +454,209 @@ const TIMELINE = [
     ],
   },
   {
-    date:   "15 · Nov · 2025",
-    icon:   IconShieldCheck,
-    title:  "Asociación Civil",
-    body:   "Nos constituimos formalmente como A.C., consolidando nuestra estructura legal. Esto nos permitió extender nuestra ayuda a pacientes de distintas regiones de México y de otros países de Latinoamérica, como Perú y Colombia.",
+    // Confirmar el año con el acta constitutiva.
+    date: "15 · Nov · 2025",
+    title: "Asociación Civil",
+    body:
+      "Nos constituimos formalmente como A.C., consolidando nuestra estructura legal. Esto nos permitió extender nuestra ayuda a pacientes de distintas regiones de México y de otros países de Latinoamérica, como Perú y Colombia.",
     images: [
       "/acerca/constitucion1.jpg",
       "/acerca/constitucion2.jpg",
     ],
   },
   {
-    date:   "Hoy",
-    icon:   IconWorld,
-    title:  "Trabajando día a día",
-    body:   "Cada historia de un paciente que logra continuar su tratamiento, cada sonrisa tras una sesión de apoyo psicológico, y cada familia que siente alivio al encontrar un espacio seguro nos recuerda por qué existimos.",
+    date: "Hoy",
+    title: "Trabajando día a día",
+    body:
+      "Cada historia de un paciente que logra continuar su tratamiento, cada sonrisa tras una sesión de apoyo psicológico, y cada familia que siente alivio al encontrar un espacio seguro nos recuerda por qué existimos.",
     images: [],
   },
 ];
 
-function Timeline() {
-  const [ref, visible] = useReveal(0.05);
+// ============================================================
+// GALERÍA DE CADA MOMENTO
+// ============================================================
+
+function TimelineGallery({ images, title, reducedMotion }) {
+  if (!images.length) return null;
+
   return (
-    <section ref={ref} style={{ background: C.bg }} className="py-28 px-8 sm:px-14 lg:px-20">
-      <div className="max-w-5xl">
-
-        <div className={`mb-16 transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
-          <SectionLabel>El camino recorrido</SectionLabel>
-          <h2 className="font-black leading-tight"
-            style={{ fontSize: "clamp(2rem, 4vw, 3rem)", color: C.text, letterSpacing: "-0.025em" }}>
-            De una experiencia personal{" "}
-            <span style={{ color: C.brand }}>a una fundación</span>
-          </h2>
+    <div
+      className={`
+        grid gap-2.5
+        ${images.length === 3
+          ? "grid-cols-2"
+          : "grid-cols-2"}
+      `}
+    >
+      {images.map((src, index) => (
+        <div
+          key={src}
+          className={`
+            group relative
+            overflow-hidden
+            rounded-lg
+            ${
+              images.length === 3 && index === 0
+                ? "col-span-2 aspect-[16/8]"
+                : "aspect-[4/3]"
+            }
+          `}
+          style={{ backgroundColor: C.border }}
+        >
+          <motion.img
+            src={src}
+            alt={`${title}, fotografía ${index + 1}`}
+            loading="lazy"
+            decoding="async"
+            className="
+              absolute inset-0
+              h-full w-full
+              object-cover
+            "
+            whileHover={
+              reducedMotion
+                ? undefined
+                : {
+                    scale: 1.035,
+                    transition: {
+                      duration: 0.7,
+                      ease: EASE,
+                    },
+                  }
+            }
+          />
         </div>
-
-        <div className="flex flex-col gap-20">
-          {TIMELINE.map((item, i) => {
-            const isLast = i === TIMELINE.length - 1;
-            const hasImages = item.images.length > 0;
-            return (
-              <div
-                key={item.title}
-                className={`transition-all duration-700 ${
-                  visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-                }`}
-                style={{ transitionDelay: `${i * 160 + 150}ms` }}
-              >
-                {/* Header del momento */}
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="flex items-center justify-center rounded-full shadow-sm shrink-0"
-                    style={{
-                      width: 48, height: 48,
-                      background: isLast ? C.brand : C.surface,
-                      border: `2px solid ${isLast ? C.brand : C.border}`,
-                    }}>
-                    <item.icon size={20} stroke={1.75}
-                      style={{ color: isLast ? "#fff" : C.brand }} />
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold tracking-widest uppercase"
-                      style={{ color: C.brand }}>{item.date}</div>
-                    <h3 className="font-black text-xl leading-tight mt-0.5"
-                      style={{ color: C.text, letterSpacing: "-0.02em" }}>{item.title}</h3>
-                  </div>
-                </div>
-
-                {/* Contenido: texto + imágenes */}
-                {hasImages ? (
-                  <div className="grid md:grid-cols-2 gap-8 items-start pl-16">
-                    {/* Texto */}
-                    <p className="text-base leading-relaxed" style={{ color: C.textMid }}>
-                      {item.body}
-                    </p>
-                    {/* Galería de fotos */}
-                    <div className={`grid gap-3 ${item.images.length === 3 ? "grid-cols-2" : "grid-cols-2"}`}>
-                      {item.images.map((src, j) => (
-                        <div
-                          key={j}
-                          className={`overflow-hidden rounded-2xl shadow-sm ${
-                            item.images.length === 3 && j === 0 ? "col-span-2" : ""
-                          }`}
-                          style={{ aspectRatio: item.images.length === 3 && j === 0 ? "16/7" : "4/3" }}
-                        >
-                          <img src={src} alt={`${item.title} ${j + 1}`}
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="pl-16">
-                    <p className="text-base leading-relaxed max-w-2xl" style={{ color: C.textMid }}>
-                      {item.body}
-                    </p>
-                  </div>
-                )}
-
-                {/* Separador — excepto el último */}
-                {!isLast && (
-                  <div className="mt-16 ml-6 w-px h-8" style={{ background: C.border }} />
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </section>
+      ))}
+    </div>
   );
 }
 
-// ─── Estatus jurídico ─────────────────────────────────────────────────────────
-function LegalStatus() {
-  const [ref, visible] = useReveal();
+// ============================================================
+// MOMENTO DE LA CRONOLOGÍA
+// ============================================================
+
+function TimelineItem({
+  item,
+  index,
+  reducedMotion,
+}) {
+  const hasImages = item.images.length > 0;
+
   return (
-    <section ref={ref} className="py-28 px-8 sm:px-14 lg:px-20" style={{ background: C.text }}>
-      <div className="max-w-7xl grid md:grid-cols-2 gap-16 items-start">
+    <motion.article
+      variants={fadeUp}
+      {...reveal(reducedMotion)}
+      className="
+        grid grid-cols-1
+        gap-5
+        border-t pt-6
+        md:grid-cols-[minmax(0,0.32fr)_minmax(0,0.68fr)]
+        md:gap-10
+        lg:gap-14
+      "
+      style={{ borderColor: C.border }}
+    >
+      {/* Fecha y título */}
+      <div>
+        <p
+          className="
+            mb-2 text-[12px]
+            font-bold uppercase
+            tracking-[0.1em]
+          "
+          style={{ color: C.brand }}
+        >
+          {item.date}
+        </p>
 
-        <div className={`transition-all duration-1000 ${visible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-10"}`}>
-          <SectionLabel light>Estatus jurídico</SectionLabel>
-          <h2 className="font-black leading-tight mb-6"
-            style={{ fontSize: "clamp(2rem, 3.5vw, 3rem)", color: "#fff", letterSpacing: "-0.025em" }}>
-            Transparencia y{" "}
-            <span style={{ color: C.brand }}>compromiso legal</span>
-          </h2>
-          <p className="leading-relaxed mb-5 text-base" style={{ color: "rgba(255,255,255,0.68)" }}>
-            En Mejoremos Realidades A.C. creemos que la confianza se construye con
-            transparencia. Nos constituimos formalmente como Asociación Civil en noviembre
-            de 2024 para brindar certeza jurídica y seguridad a nuestros pacientes,
-            donadores, aliados y embajadores.
-          </p>
-          <p className="leading-relaxed mb-10 text-base" style={{ color: "rgba(255,255,255,0.68)" }}>
-            Actualmente estamos dados de alta ante el SAT y trabajamos activamente para
-            obtener la autorización como{" "}
-            <strong style={{ color: "#fff" }}>Donataria Autorizada</strong>, lo que
-            permitirá ofrecer mayores beneficios fiscales a quienes confían en nuestra labor.
-          </p>
+        <h3
+          className="
+            max-w-[320px]
+            text-[clamp(1.35rem,2vw,1.8rem)]
+            font-bold
+            leading-[1.25]
+            tracking-[-0.035em]
+          "
+          style={{ color: C.text }}
+        >
+          {item.title}
+        </h3>
+      </div>
 
-          <Link
-            to="/aviso-de-privacidad"
-            className="inline-flex items-center gap-2 text-sm font-bold transition-all duration-200 hover:-translate-y-0.5"
-            style={{ color: C.brand }}
-          >
-            <IconShieldCheck size={18} stroke={2} />
-            Consultar Aviso de Privacidad
-            <IconArrowRight size={15} stroke={2.25} />
-          </Link>
-        </div>
+      {/* Historia e imágenes */}
+      <div className="min-w-0">
+        <p
+          className="
+            max-w-[780px]
+            text-[14px]
+            leading-[1.85]
+            sm:text-[15px]
+          "
+          style={{ color: C.textMid }}
+        >
+          {item.body}
+        </p>
 
-        <div className={`flex flex-col gap-4 transition-all duration-1000 delay-200 ${visible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10"}`}>
-          {[
-            {
-              icon: IconShieldCheck,
-              label: "Asociación Civil constituida",
-              sub:   "Noviembre 2025 · Registro formal ante notaría pública",
-              done:  true,
-            },
-            {
-              icon: IconScale,
-              label: "Alta ante el SAT",
-              sub:   "Cumplimiento de requisitos legales vigentes",
-              done:  true,
-            },
-            {
-              icon: IconHeart,
-              label: "Donataria Autorizada",
-              sub:   "En proceso de obtención — beneficios fiscales para donadores",
-              done:  false,
-            },
-          ].map(({ icon: Icon, label, sub, done }) => (
-            <div key={label}
-              className="flex items-start gap-4 rounded-2xl p-5"
-              style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
-              <div className="inline-flex items-center justify-center rounded-xl shrink-0"
-                style={{ width: 44, height: 44, background: done ? C.brand : "rgba(255,255,255,0.08)", color: done ? "#fff" : "rgba(255,255,255,0.4)" }}>
-                <Icon size={20} stroke={1.75} />
-              </div>
-              <div>
-                <div className="font-bold text-sm mb-0.5" style={{ color: done ? "#fff" : "rgba(255,255,255,0.5)" }}>
-                  {label}
-                  {done && (
-                    <span className="ml-2 text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full"
-                      style={{ background: C.brand, color: "#fff" }}>✓ Activo</span>
-                  )}
-                  {!done && (
-                    <span className="ml-2 text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full"
-                      style={{ background: "rgba(245,166,35,0.2)", color: C.accent }}>En proceso</span>
-                  )}
-                </div>
-                <div className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.45)" }}>{sub}</div>
-              </div>
-            </div>
+        {hasImages && (
+          <div className="mt-5">
+            <TimelineGallery
+              images={item.images}
+              title={item.title}
+              reducedMotion={reducedMotion}
+            />
+          </div>
+        )}
+      </div>
+    </motion.article>
+  );
+}
+
+// ============================================================
+// SECCIÓN CRONOLOGÍA
+// ============================================================
+
+function Timeline() {
+  const reducedMotion = useReducedMotion();
+
+  return (
+    <section
+      aria-labelledby="timeline-title"
+      className="
+        px-5 py-12
+        sm:px-8 sm:py-14
+        lg:px-12 lg:py-16
+        xl:px-16
+        2xl:px-20
+      "
+      style={{ backgroundColor: C.bg }}
+    >
+      <div className="mx-auto max-w-[1360px]">
+        <motion.div
+          variants={fadeUp}
+          {...reveal(reducedMotion)}
+          className="mb-8 max-w-[780px]"
+        >
+          <SectionLabel>
+            El camino recorrido
+          </SectionLabel>
+
+          <SectionHeading id="timeline-title">
+            De una experiencia personal{" "}
+            <span style={{ color: C.brand }}>
+              a una fundación.
+            </span>
+          </SectionHeading>
+        </motion.div>
+
+        <div className="flex flex-col gap-9 lg:gap-11">
+          {TIMELINE.map((item, index) => (
+            <TimelineItem
+              key={item.title}
+              item={item}
+              index={index}
+              reducedMotion={reducedMotion}
+            />
           ))}
         </div>
       </div>
@@ -422,56 +664,342 @@ function LegalStatus() {
   );
 }
 
-// ─── CTA final ────────────────────────────────────────────────────────────────
-function CtaBanner() {
-  const [ref, visible] = useReveal();
+// ============================================================
+// ESTATUS JURÍDICO
+// ============================================================
+
+const LEGAL_ITEMS = [
+  {
+    title: "Asociación Civil constituida",
+    detail:
+      "Registro formal ante notaría pública.",
+    status: "Constituida",
+  },
+  {
+    title: "Alta ante el SAT",
+    detail:
+      "Cumplimiento de requisitos legales vigentes.",
+    status: "Registrada",
+  },
+  {
+    title: "Donataria Autorizada",
+    detail:
+      "En proceso de obtención de la autorización.",
+    status: "En proceso",
+  },
+];
+
+function LegalStatus() {
+  const reducedMotion = useReducedMotion();
+
   return (
-    <section ref={ref} className="py-24 px-8 sm:px-14 lg:px-20" style={{ background: C.brand }}>
-      <div className={`max-w-7xl grid md:grid-cols-2 gap-10 items-center transition-all duration-700 ${
-        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      }`}>
-        <div>
-          <div className="text-xs font-bold tracking-widest uppercase mb-3"
-            style={{ color: "rgba(255,255,255,0.6)" }}>Sé parte del cambio</div>
-          <h2 className="font-black leading-tight"
-            style={{ fontSize: "clamp(2rem, 5vw, 3rem)", color: "#fff", letterSpacing: "-0.025em" }}>
-            Nadie debe enfrentar{" "}
-            <span style={{ color: C.accent }}>este camino solo</span>
-          </h2>
-        </div>
-        <div className="flex flex-col gap-4 md:items-end">
-          <p className="text-base leading-relaxed md:text-right max-w-sm"
-            style={{ color: "rgba(255,255,255,0.78)" }}>
-            Tu apoyo nos permite acompañar a más pacientes y sus familias en cada etapa del camino.
+    <section
+      aria-labelledby="legal-title"
+      className="
+        px-5 py-12
+        sm:px-8 sm:py-14
+        lg:px-12 lg:py-16
+        xl:px-16
+        2xl:px-20
+      "
+      style={{ backgroundColor: C.text }}
+    >
+      <div
+        className="
+          mx-auto grid
+          max-w-[1360px]
+          grid-cols-1
+          gap-9
+          md:grid-cols-2
+          lg:gap-14
+        "
+      >
+        {/* Información */}
+        <motion.div
+          variants={fadeUp}
+          {...reveal(reducedMotion)}
+          className="min-w-0"
+        >
+          <SectionLabel light>
+            Estatus jurídico
+          </SectionLabel>
+
+          <SectionHeading id="legal-title" light>
+            Transparencia y{" "}
+            <span className="text-[#F08B9A]">
+              compromiso legal.
+            </span>
+          </SectionHeading>
+
+          <p
+            className="
+              mt-5 max-w-[570px]
+              text-[14px]
+              leading-[1.85]
+              text-white/75
+              sm:text-[15px]
+            "
+          >
+            En Mejoremos Realidades A.C.
+            creemos que la confianza se construye
+            con transparencia. Nos constituimos
+            formalmente como Asociación Civil para
+            brindar certeza jurídica y seguridad
+            a nuestros pacientes, donadores,
+            aliados y embajadores.
           </p>
-          <div className="flex flex-wrap gap-4">
-            <Link to="/donar"
-              className="inline-flex items-center gap-2 font-bold text-sm px-9 py-4 rounded-full transition-all duration-200 hover:-translate-y-0.5"
-              style={{ background: "#fff", color: C.brand }}>
-              <IconHeart size={18} stroke={2} /> Donar ahora
-            </Link>
-            <Link to="/servicios"
-              className="inline-flex items-center gap-2 font-semibold text-sm px-9 py-4 rounded-full border-2 transition-all duration-200 hover:-translate-y-0.5"
-              style={{ borderColor: "rgba(255,255,255,0.45)", color: "#fff" }}>
-              Ver servicios
-            </Link>
-          </div>
-        </div>
+
+          <p
+            className="
+              mt-4 max-w-[570px]
+              text-[14px]
+              leading-[1.85]
+              text-white/75
+              sm:text-[15px]
+            "
+          >
+            Actualmente estamos dados de alta
+            ante el SAT y trabajamos activamente
+            para obtener la autorización como{" "}
+            <strong className="text-white">
+              Donataria Autorizada
+            </strong>
+            , lo que permitirá ofrecer mayores
+            beneficios fiscales a quienes confían
+            en nuestra labor.
+          </p>
+
+          <Link
+            to="/aviso-de-privacidad"
+            className="
+              mt-6 inline-flex
+              border-b border-white/60
+              pb-1
+              text-[13px]
+              font-semibold
+              text-white
+              transition-colors
+              hover:border-white
+            "
+          >
+            Consultar Aviso de Privacidad
+          </Link>
+        </motion.div>
+
+        {/* Estado institucional */}
+        <motion.div
+          variants={
+            reducedMotion ? undefined : stagger
+          }
+          initial={reducedMotion ? false : "hidden"}
+          whileInView="visible"
+          viewport={VIEWPORT}
+          className="border-t border-white/20"
+        >
+          {LEGAL_ITEMS.map((item, index) => (
+            <motion.div
+              key={item.title}
+              variants={fadeUp}
+              className="
+                grid grid-cols-1
+                gap-2
+                border-b border-white/20
+                py-5
+                sm:grid-cols-[1fr_auto]
+                sm:items-start
+                sm:gap-5
+              "
+            >
+              <div>
+                <h3
+                  className="
+                    mb-1 text-[15px]
+                    font-semibold
+                    text-white
+                  "
+                >
+                  {item.title}
+                </h3>
+
+                <p
+                  className="
+                    text-[13px]
+                    leading-[1.7]
+                    text-white/60
+                  "
+                >
+                  {item.detail}
+                </p>
+              </div>
+
+              <span
+                className="
+                  text-[12px]
+                  font-semibold
+                "
+                style={{
+                  color:
+                    item.status === "En proceso"
+                      ? "#F0C9CF"
+                      : "#FFFFFF",
+                }}
+              >
+                {item.status}
+              </span>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );
 }
 
-// ─── AcercaDe ─────────────────────────────────────────────────────────────────
+// ============================================================
+// CTA FINAL
+// ============================================================
+
+function CtaBanner() {
+  const reducedMotion = useReducedMotion();
+
+  return (
+    <section
+      aria-labelledby="about-cta-title"
+      className="
+        px-5 py-12
+        sm:px-8 sm:py-14
+        lg:px-12 lg:py-16
+        xl:px-16
+        2xl:px-20
+      "
+      style={{ backgroundColor: C.brand }}
+    >
+      <motion.div
+        variants={
+          reducedMotion ? undefined : stagger
+        }
+        initial={reducedMotion ? false : "hidden"}
+        whileInView="visible"
+        viewport={VIEWPORT}
+        className="
+          mx-auto grid
+          max-w-[1360px]
+          grid-cols-1
+          items-center
+          gap-7
+          md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]
+          md:gap-10
+        "
+      >
+        <div>
+          <motion.div variants={fadeUp}>
+            <SectionLabel light>
+              Sé parte del cambio
+            </SectionLabel>
+          </motion.div>
+
+          <motion.h2
+            id="about-cta-title"
+            variants={fadeUp}
+            className="
+              max-w-[700px]
+              text-[clamp(2rem,4vw,3.5rem)]
+              font-extrabold
+              leading-[1.12]
+              tracking-[-0.045em]
+              text-white
+            "
+          >
+            Nadie debe enfrentar{" "}
+            <span className="text-white/75">
+              este camino solo.
+            </span>
+          </motion.h2>
+        </div>
+
+        <div className="md:justify-self-end">
+          <motion.p
+            variants={fadeUp}
+            className="
+              mb-5 max-w-[410px]
+              text-[14px]
+              leading-[1.8]
+              text-white/85
+              sm:text-[15px]
+              md:text-right
+            "
+          >
+            Tu apoyo nos permite acompañar
+            a más pacientes y sus familias
+            en cada etapa del camino.
+          </motion.p>
+
+          <motion.div
+            variants={fadeUp}
+            className="
+              flex flex-wrap
+              gap-3
+              md:justify-end
+            "
+          >
+            <Link
+              to="/donar"
+              className="
+                inline-flex min-h-12
+                items-center justify-center
+                rounded-md bg-white
+                px-7 text-[14px]
+                font-bold
+                transition-colors
+                hover:bg-[#F5F5F5]
+              "
+              style={{ color: C.brand }}
+            >
+              Donar ahora
+            </Link>
+
+            <Link
+              to="/servicios"
+              className="
+                inline-flex min-h-12
+                items-center justify-center
+                rounded-md
+                border border-white/60
+                px-7 text-[14px]
+                font-semibold
+                text-white
+                transition-colors
+                hover:bg-white/10
+              "
+            >
+              Ver servicios
+            </Link>
+          </motion.div>
+        </div>
+      </motion.div>
+    </section>
+  );
+}
+
+// ============================================================
+// PÁGINA PRINCIPAL
+// ============================================================
+
 export default function AcercaDe() {
   return (
-    <div className="min-h-screen font-sans" style={{ background: C.bg }}>
+    <div
+      className="min-h-screen font-sans"
+      style={{ backgroundColor: C.bg }}
+    >
       <Navbar />
-      <Hero />
-      <Mission />
-      <Timeline />
-      <LegalStatus />
-      <CtaBanner />
+
+      <main>
+        <Hero />
+        <Mission />
+        <Timeline />
+        <LegalStatus />
+        <CtaBanner />
+      </main>
+
       <Footer />
     </div>
   );
